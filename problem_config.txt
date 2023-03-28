@@ -1,0 +1,14 @@
+{
+  "tower_construction_cost": 500,
+  "tower_maintanance_cost": 1,
+  "user_satisfaction_levels": [
+    0.2,
+    1,
+    3
+  ],
+  "user_satisfaction_scores": [
+    10,
+    20,
+    40
+  ]
+}
