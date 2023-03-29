@@ -19,11 +19,6 @@ class GeneticAlgorithm:
     def init_population(self):
         # self.population = 
         pass
-
-    # Fitness proportional-roulette wheel 
-    def parent_selection(self):
-        pass
-
     def roulette_wheel_selection(self):
         # Computes the totallity of the population fitness
         population_fitness = sum([chromosome.fitness for chromosome in self.population])
@@ -34,6 +29,15 @@ class GeneticAlgorithm:
         # Selects one chromosome based on the computed probabilities
         return np.random.choice(self.population, p=chromosome_probabilities)
     
+    # Fitness proportional-roulette wheel 
+    def parent_selection(self):
+        pass
+    
+    def recombination(self):
+        pass
+    
+    def all_mutation(self):
+        pass
     # میو + لاندا
     def survival_selection(self):
         pass
