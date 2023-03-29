@@ -16,3 +16,6 @@ class GA:
     def is_terminated(self):
         pass
 
+    def fitness(self):
+        pass
+
