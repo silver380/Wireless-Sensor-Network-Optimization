@@ -13,4 +13,4 @@ def read_map(file_path):
             city_map.append(list(map(int,line.split(','))))
     return city_map
 
-        
+

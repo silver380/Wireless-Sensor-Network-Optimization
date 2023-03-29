@@ -1,8 +1,10 @@
 import random
+import numpy as np
 
 class Chromosome:
-    def __init_(self, map_size, mut_prob, recomb_prob, max_BW, blocks_population, user_satisfaction_scores, user_satisfaction_levels):
-        # List of towers: [x, y, BW]
+    def __init_(self, map_size, mut_prob, recomb_prob, max_BW, blocks_population, user_satisfaction_scores, user_satisfaction_levels, 
+                tower_construction_cost, tower_maintanance_cost):
+        # List of towers: (x, y, BW)
         self.towers = []
 
         # Indicates each neighborhood is connected to which tower
@@ -21,6 +23,8 @@ class Chromosome:
         self.blocks_population = blocks_population
         self.user_satisfaction_scores = user_satisfaction_scores
         self.user_satisfaction_levels = user_satisfaction_levels
+        self.tower_construction_cost = tower_construction_cost
+        self.tower_maintanance_cost = tower_maintanance_cost
     
     def mut_append(self):
         append_prob = random.uniform(0,1)
@@ -43,7 +47,8 @@ class Chromosome:
             if add_bandwidth_prob <= self.mut_prob:
                 # TODO: test gussian, ...
                 new_bandwidth = random.randint(0, self.max_BW) + random.random()
-                self.towers[tower_id][2] = new_bandwidth
+                self.towers[tower_id] = (self.towers[tower_id][0],self.towers[tower_id][1],
+                                          new_bandwidth)
 
     def mut_pop(self):
         pop_prob = random.uniform(0,1)
@@ -65,32 +70,44 @@ class Chromosome:
             
         return self.user_satisfaction_scores[len(self.user_satisfaction_levels)-1]
 
-    def cov(self, tower, i, j):
-        pass
+
+    def coverage(self, tower, x, y):
+        sigma = np.array([[8, 0], [0, 8]])
+        ty = np.array([tower[0],tower[1]])
+        bx = np.array([x,y])
+        return np.exp(-0.5 * (bx-ty) @ np.linalg.inv(sigma) @ (bx-ty).T)
+        
+        
+    def calculate_tower_blocks_population(self, tower_id):
+        tower_blocks_population = 0
+        for r in enumerate(self.adj_id):
+                for c in enumerate(self.adj_id[r]):
+                    if self.adj_id[r][c] == tower_id:
+                        tower_blocks_population += self.blocks_population[r][c]
+        return tower_blocks_population
 
     def fitness(self):
-        BWs_per_user = []
+        users_satisfaction = 0
         for i in enumerate(self.adj_id):
             for j, tower_id in enumerate(self.adj_id[i]):
                 block_population = self.blocks_population[i][j]
                 tower = self.towers[tower_id]
-                tower_blocks_population = 0
-                for r in enumerate(self.adj_id):
-                    for c in enumerate(self.adj_id[r]):
-                        if self.adj_id[r][c] == tower_id:
-                            tower_blocks_population += self.blocks_population[r][c]
-                BW_prime = (tower[3] * block_population) / tower_blocks_population
-                BW = self.cov(tower, i, j) * BW_prime
-                BWs_per_user.append(BW / block_population)
+                tower_blocks_population = self.calculate_tower_blocks_population(tower_id)
+                BW_prime = (tower[2] * block_population) / tower_blocks_population
+                BW = self.coverage(tower, i, j) * BW_prime
 
-        # Calculate user's satisfaction
-        users_satisfaction = []
-        for user_received_bandwidth in BWs_per_user:
-            users_satisfaction.append(self.calculate_user_satisfaction_score(user_received_bandwidth))
+                #  Calculate user's satisfaction
+                users_satisfaction += (self.calculate_user_satisfaction_score(BW / block_population) * block_population)
 
         # Calculate towers cost
+        towers_cost = len(self.towers) * self.tower_construction_cost
+
+        for tower in self.towers:
+            towers_cost += (self.tower_maintanance_cost * tower[2])
 
         # Normalize 
-
-        # return towers_cost - users_satisfaction
+        users_satisfaction_norm = users_satisfaction / ((self.map_size **2) * self.max_population)
+        towers_cost_norm = towers_cost / ((self.BW_max * len(self.towers) * self.tower_maintanance_cost) + towers_cost)
+        print(f"users_satisfaction_norm = {users_satisfaction_norm}, towers_cost_norm = {towers_cost_norm}")
+        return users_satisfaction_norm - towers_cost_norm
 

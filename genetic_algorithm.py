@@ -4,7 +4,7 @@ import numpy as np
 class GeneticAlgorithm:
     def __init__(self, n_iter, mut_prob, recomb_prob, tower_construction_cost,
                   tower_maintanance_cost, user_satisfaction_scores,user_satisfaction_levels, population_size, offsprings):
-        # self.iterations_no = n_iter
+        self.iterations_no = n_iter
         self.mut_prob = mut_prob
         self.recomb_prob = recomb_prob
         self.tower_construction_cost = tower_construction_cost
