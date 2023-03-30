@@ -1,6 +1,5 @@
 import random
-import numpy as np
-
+import util
 class Chromosome:
     def __init_(self, map_size, mut_prob, recomb_prob, max_BW, blocks_population, user_satisfaction_scores, user_satisfaction_levels, 
                 tower_construction_cost, tower_maintanance_cost):
@@ -45,8 +44,9 @@ class Chromosome:
         for tower_id in range(len(self.towers)):
             add_bandwidth_prob = random.uniform(0,1)
             if add_bandwidth_prob <= self.mut_prob:
-                # TODO: test gussian, ...
-                new_bandwidth = random.randint(0, self.max_BW) + random.random()
+                # Gaussian mutation
+                added_bandwidth = random.gauss(0,self.max_BW)
+                new_bandwidth = min(self.max_BW,max(self.towers[tower_id][2] + added_bandwidth,0))
                 self.towers[tower_id] = (self.towers[tower_id][0],self.towers[tower_id][1],
                                           new_bandwidth)
 
@@ -69,14 +69,6 @@ class Chromosome:
                 return self.user_satisfaction_scores[i-1]
             
         return self.user_satisfaction_scores[len(self.user_satisfaction_levels)-1]
-
-
-    def coverage(self, tower, x, y):
-        sigma = np.array([[8, 0], [0, 8]])
-        ty = np.array([tower[0],tower[1]])
-        bx = np.array([x,y])
-        return np.exp(-0.5 * (bx-ty) @ np.linalg.inv(sigma) @ (bx-ty).T)
-        
         
     def calculate_tower_blocks_population(self, tower_id):
         tower_blocks_population = 0
@@ -94,7 +86,7 @@ class Chromosome:
                 tower = self.towers[tower_id]
                 tower_blocks_population = self.calculate_tower_blocks_population(tower_id)
                 BW_prime = (tower[2] * block_population) / tower_blocks_population
-                BW = self.coverage(tower, i, j) * BW_prime
+                BW = util.coverage(tower, i, j) * BW_prime
 
                 #  Calculate user's satisfaction
                 users_satisfaction += (self.calculate_user_satisfaction_score(BW / block_population) * block_population)
@@ -107,7 +99,9 @@ class Chromosome:
 
         # Normalize 
         users_satisfaction_norm = users_satisfaction / ((self.map_size **2) * self.max_population)
-        towers_cost_norm = towers_cost / ((self.BW_max * len(self.towers) * self.tower_maintanance_cost) + towers_cost)
+        towers_cost_norm = towers_cost / ((self.max_BW * len(self.towers) * self.tower_maintanance_cost) + towers_cost)
         print(f"users_satisfaction_norm = {users_satisfaction_norm}, towers_cost_norm = {towers_cost_norm}")
+
+        # Maximization
         return users_satisfaction_norm - towers_cost_norm
 

@@ -19,6 +19,7 @@ class GeneticAlgorithm:
     def init_population(self):
         # self.population = 
         pass
+
     def roulette_wheel_selection(self):
         # Computes the totallity of the population fitness
         population_fitness = sum([chromosome.fitness for chromosome in self.population])
@@ -38,6 +39,7 @@ class GeneticAlgorithm:
     
     def all_mutation(self):
         pass
+    
     # میو + لاندا
     def survival_selection(self):
         pass
