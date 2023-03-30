@@ -1,4 +1,6 @@
 import util
+from genetic_algorithm import GeneticAlgorithm as GA
+
 problem_config_file = 'problem_config.txt'
 map_path = 'blocks_population.txt'
 tower_construction_cost = -1
@@ -7,7 +9,10 @@ user_satisfaction_levels = []
 user_satisfaction_scores = []
 map_size = 0
 max_BW = 0
-
+n_iter = 20
+population_size = 0
+mut_prob = 0.1
+recomb_prob = 0.9
 if __name__ == "__main__":
    problem_config = util.read_config(problem_config_file)
    tower_construction_cost = problem_config['tower_construction_cost']
@@ -16,5 +21,9 @@ if __name__ == "__main__":
    user_satisfaction_scores = problem_config['user_satisfaction_scores']
    map_size, blocks_population = util.read_map(map_path)
    max_BW = util.calculate_max_BW(map_size, max(map(max, blocks_population)),user_satisfaction_levels[-1])
+   model = GA(n_iter, mut_prob, map_size, max_BW, blocks_population, recomb_prob, tower_construction_cost,
+                  tower_maintanance_cost, user_satisfaction_scores,user_satisfaction_levels, population_size, offsprings)
+   model.run()
+
 
 
