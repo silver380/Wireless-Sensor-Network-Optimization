@@ -2,11 +2,11 @@ import util
 import numpy as np
 import random
 from  chromosome import Chromosome
-
+import sys
 class GeneticAlgorithm:
     def __init__(self, n_iter, mut_prob, map_size, max_BW, blocks_population, recomb_prob, tower_construction_cost,
                   tower_maintanance_cost, user_satisfaction_scores,user_satisfaction_levels, population_size):
-        self.iterations_no = n_iter
+        self.n_iter = n_iter
         self.map_size = map_size
         self.mut_prob = mut_prob
         self.recomb_prob = recomb_prob
@@ -28,7 +28,7 @@ class GeneticAlgorithm:
             self.population.append(young_pop)
 
     def tournament_selection(self,  k):
-        parents = random.choices(self.population, k)
+        parents = random.choices(self.population, k=k)
         parents = sorted(parents, key=lambda agent: agent.fitness, reverse=True)
         bestparent = parents[0]
         return bestparent
@@ -52,8 +52,8 @@ class GeneticAlgorithm:
     
     def recombination(self):
         youngs = []
-        for _ in range(self.population_size/2):
-            parents = random.choices(self.parent_selection(), 2)
+        for _ in range(self.population_size//2):
+            parents = random.choices(self.parent_selection(), k=2)
             young1 = Chromosome(self.map_size, self.mut_prob, self.recomb_prob, self.max_BW, self.blocks_population, self.user_satisfaction_scores, self.user_satisfaction_levels, 
                 self.tower_construction_cost, self.tower_maintanance_cost)
             young1.towers.clear()
@@ -113,7 +113,26 @@ class GeneticAlgorithm:
             self.current_iter += 1
             print(f"current iteration: {self.current_iter}",
                   f", best fitness: {sorted(self.population, key=lambda agent: agent.fitness, reverse=True)[0].fitness}")
-            print("--------------------------------------------------------------------------------------------------------------")
+            print(f'towers: {len(sorted(self.population, key=lambda agent: agent.fitness, reverse=True)[0].towers)}')
+            print("--------------------------------------------------------------------------------------------")
+            
+        ans =  sorted(self.population, key=lambda agent: agent.fitness, reverse=True)[0]
+        
+        original_stdout = sys.stdout
+        with open('towers.txt', 'w') as f:
+            sys.stdout = f
+            print(ans.towers)
+            sys.stdout = original_stdout
+        
+        with open('adj.txt', 'w') as f:
+            sys.stdout = f
+            print(ans.adj_id)
+            sys.stdout = original_stdout
+        
+        with open('user_satisfaction.txt', 'w') as f:
+            sys.stdout = f
+            print(ans.block_user_satisfaction_score)
+            sys.stdout = original_stdout
 
     
 
