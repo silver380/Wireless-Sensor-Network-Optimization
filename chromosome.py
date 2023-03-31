@@ -4,7 +4,7 @@ import math
 
 class Chromosome:
     def __init__(self, map_size, mut_prob, recomb_prob, max_BW, min_BW, blocks_population, user_satisfaction_scores, user_satisfaction_levels, 
-                tower_construction_cost, tower_maintanance_cost, pop_avg):
+                tower_construction_cost, tower_maintanance_cost, pop_avg, pop_sum):
         # List of towers: (x, y, BW)
         self.towers = []
 
@@ -29,8 +29,10 @@ class Chromosome:
         self.block_user_satisfaction_score = [[0 for i in range(map_size)] for j in range(map_size)]
         self.fitness = 0
         self.pop_avg = pop_avg
+        self.pop_sum = pop_sum
         self.constrcuted_cost = 0
         self.user_satisfied = 0
+        self.user_satisfaction_penalty = -20
         self.init_chromosome()
         
     def init_chromosome(self):
@@ -112,7 +114,7 @@ class Chromosome:
         for i, user_satisfaction_level in enumerate(self.user_satisfaction_levels):
             if user_received_bandwidth < user_satisfaction_level:
                 if i == 0:
-                    return -20
+                    return self.user_satisfaction_penalty
                 return self.user_satisfaction_scores[i-1]
         return self.user_satisfaction_scores[len(self.user_satisfaction_levels)-1]
         
@@ -150,7 +152,8 @@ class Chromosome:
             towers_maintanance_cost += (self.tower_maintanance_cost * tower[2])
         
         # Normalize 
-        users_satisfaction_norm = users_satisfaction / ((self.map_size ** 2) * max(map(max, self.blocks_population)) * self.user_satisfaction_scores[-1])
+        users_satisfaction_norm = (users_satisfaction - self.pop_sum*self.user_satisfaction_penalty) / ( self.pop_sum * self.user_satisfaction_scores[-1] 
+                                                                            - self.pop_sum*self.user_satisfaction_penalty)
         towers_maintanance_cost_norm = 0
         if towers_maintanance_cost != 0:
             towers_maintanance_cost_norm = towers_maintanance_cost / ((self.max_BW * len(self.towers) * self.tower_maintanance_cost))
@@ -160,9 +163,7 @@ class Chromosome:
         # Maximization
         self.constrcuted_cost = towers_maintanance_cost_norm + towers_constrcution_cost_norm
         self.user_satisfied = users_satisfaction_norm
-        #self.fitness = 3 * (1 - towers_cost_norm) * users_satisfaction_norm
+        # self.fitness = 3 * (1 - self.constrcuted_cost) * users_satisfaction_norm
 
-        self.fitness = 2.5*users_satisfaction_norm - 1.5*(towers_maintanance_cost_norm + towers_constrcution_cost_norm)
-        #print(f"tower cost norm = {towers_cost_norm}, user norm = {users_satisfaction_norm}, fitness ={self.fitness}\n")
-        
-        #print(f"satis-norm: {users_satisfaction_norm}, tower-cost: {towers_cost}")
+        self.fitness = 2.5*users_satisfaction_norm - 2*(towers_maintanance_cost_norm + towers_constrcution_cost_norm)
+       

@@ -11,7 +11,11 @@ def read_map(file_path):
     with open(file_path) as f:
         for line in f:
             city_map.append(list(map(int,line.split(','))))
-    return len(city_map), city_map
+    pop_sum = 0
+    for i in range(len(city_map)):
+        for j in range(len(city_map)):
+            pop_sum += city_map[j][i]
+    return len(city_map), city_map, pop_sum
 
 def coverage(tower, x, y):
         sigma = np.array([[8, 0], [0, 8]])
@@ -20,7 +24,7 @@ def coverage(tower, x, y):
         return np.exp(-0.5 * (bx-ty) @ np.linalg.inv(sigma) @ (bx-ty).T)
 
 def calculate_max_BW(map_size, max_pop, max_user_satisfaction_level):
-    max_BW = map_size * map_size * max_user_satisfaction_level * max_pop / coverage((0,0,0), map_size-1, map_size-1)
+    max_BW = max_user_satisfaction_level * max_pop / coverage((0,0,0), map_size-1, map_size-1)
     return max_BW
 
 def calculate_min_BW(max_BW, map_size, min_user_satisfaction_level, blocks_population):

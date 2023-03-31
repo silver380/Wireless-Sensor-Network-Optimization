@@ -6,7 +6,7 @@ import sys
 
 class GeneticAlgorithm:
     def __init__(self, n_iter, mut_prob, map_size, max_BW, min_BW, blocks_population, recomb_prob, tower_construction_cost,
-                  tower_maintanance_cost, user_satisfaction_scores,user_satisfaction_levels, population_size, pop_avg):
+                  tower_maintanance_cost, user_satisfaction_scores,user_satisfaction_levels, population_size, pop_avg, pop_sum):
         self.n_iter = n_iter
         self.map_size = map_size
         self.mut_prob = mut_prob
@@ -22,12 +22,13 @@ class GeneticAlgorithm:
         self.min_BW = min_BW
         self.current_iter = 0
         self.pop_avg = pop_avg
+        self.pop_sum = pop_sum
     
     # Random initialization
     def init_population(self):
         for _ in range(self.population_size):
             young_pop = Chromosome(self.map_size, self.mut_prob, self.recomb_prob, self.max_BW, self.min_BW, self.blocks_population, self.user_satisfaction_scores, self.user_satisfaction_levels, 
-                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_avg)
+                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_avg, self.pop_sum)
             self.population.append(young_pop)
 
     def roulette_wheel_selection(self):
@@ -62,10 +63,10 @@ class GeneticAlgorithm:
         for _ in range(self.population_size):
             parents = random.choices(self.parent_selection(), k=2)
             young1 = Chromosome(self.map_size, self.mut_prob, self.recomb_prob, self.max_BW, self.min_BW, self.blocks_population, self.user_satisfaction_scores, self.user_satisfaction_levels, 
-                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_avg)
+                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_avg, self.pop_sum)
             young1.towers.clear()
             young2 = Chromosome(self.map_size, self.mut_prob, self.recomb_prob, self.max_BW, self.min_BW, self.blocks_population, self.user_satisfaction_scores, self.user_satisfaction_levels, 
-                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_avg)
+                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_avg, self.pop_sum)
             young2.towers.clear()
             for i in range(self.map_size):
                 for j in range(self.map_size):
@@ -107,7 +108,9 @@ class GeneticAlgorithm:
 
     # mu + lambda
     def survival_selection(self, youngs):
-        mpl = self.population + youngs
+        #TODO :k
+        k = 2
+        mpl = sorted(self.population.copy(), key=lambda agent: agent.fitness, reverse=True)[:self.population_size//k].copy() + youngs
         mpl = sorted(mpl, key=lambda agent: agent.fitness, reverse=True)
         mpl = mpl [:self.population_size].copy()
         return mpl
