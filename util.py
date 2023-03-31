@@ -22,9 +22,16 @@ def coverage(tower, x, y):
 def calculate_max_BW(map_size, max_pop, max_user_satisfaction_level):
     max_BW = map_size * map_size * max_user_satisfaction_level * max_pop / coverage((0,0,0), map_size-1, map_size-1)
     return max_BW
-    
+
+def calculate_min_BW(max_BW, map_size, min_user_satisfaction_level, blocks_population):
+    min_BW = max_BW
+    for i in range(map_size):
+        for j in range(map_size):
+            min_BW = min(min_BW, blocks_population[i][j] * min_user_satisfaction_level / coverage((i,j,0), i, j))
+    return min_BW
+     
 def calculate_k(population_size, iter):
     return round(2 + (population_size - 2) * iter / population_size)
     # return (population_size//2)
-    #return 2
+    #return 3
      
