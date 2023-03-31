@@ -71,8 +71,8 @@ class Chromosome:
     
     def mut_relocation_tower(self):
         for i in range(len(self.towers)):
-            add_x = random.uniform(-1,1)
-            add_y = random.uniform(-1,1)
+            add_x = random.uniform(-5,5)
+            add_y = random.uniform(-5,5)
             new_x = self.towers[i][0] + add_x
             new_x = min(max(0,new_x),20)
             new_y = self.towers[i][0] + add_y
@@ -148,22 +148,30 @@ class Chromosome:
         # Calculate towers cost
         towers_constrcution_cost = len(self.towers) * self.tower_construction_cost
         towers_maintanance_cost  = 0
+        avg_bw = 0
         for tower in self.towers:
             towers_maintanance_cost += (self.tower_maintanance_cost * tower[2])
+            avg_bw += tower[2]
+        avg_bw = avg_bw/len(self.towers)
         
         # Normalize 
-        users_satisfaction_norm = (users_satisfaction - self.pop_sum*self.user_satisfaction_penalty) / ( self.pop_sum * self.user_satisfaction_scores[-1] 
-                                                                            - self.pop_sum*self.user_satisfaction_penalty)
+        # users_satisfaction_norm = (users_satisfaction - self.pop_sum*self.user_satisfaction_penalty) / ( self.pop_sum * self.user_satisfaction_scores[-1]
+        #                                                                     - self.pop_sum*self.user_satisfaction_penalty)
+        users_satisfaction_norm = (users_satisfaction) / (
+                    self.pop_sum * self.user_satisfaction_scores[-1])
         towers_maintanance_cost_norm = 0
         if towers_maintanance_cost != 0:
-            towers_maintanance_cost_norm = (towers_maintanance_cost - (self.min_BW*self.tower_maintanance_cost)) / ((self.max_BW * (self.map_size ** 2) * self.tower_maintanance_cost) - (self.min_BW*self.tower_maintanance_cost))
+            towers_maintanance_cost_norm = (towers_maintanance_cost - (self.min_BW * (self.map_size ** 2) * self.tower_maintanance_cost)) / ((self.max_BW * self.tower_maintanance_cost) - (self.min_BW * (self.map_size ** 2) * self.tower_maintanance_cost))
         
         towers_constrcution_cost_norm = towers_constrcution_cost / ((self.map_size ** 2) * self.tower_construction_cost)
        
         # Maximization
-        self.constrcuted_cost = towers_maintanance_cost_norm + towers_constrcution_cost_norm
+        self.constrcuted_cost = (towers_maintanance_cost_norm + towers_constrcution_cost_norm)
         self.user_satisfied = users_satisfaction_norm
         # self.fitness = 3 * (1 - self.constrcuted_cost) * users_satisfaction_norm
 
-        self.fitness = 2*users_satisfaction_norm - 10*(towers_maintanance_cost_norm + towers_constrcution_cost_norm)
-       
+        self.fitness = users_satisfaction_norm - 0.5 * (towers_maintanance_cost_norm + towers_constrcution_cost_norm)
+
+        print(f"avg-bw: {avg_bw},tower-m-cost:{towers_maintanance_cost}, tower-m-cost:{towers_maintanance_cost_norm}, tower-c-cost: {towers_constrcution_cost_norm}, user-satis: {users_satisfaction_norm}")
+
+

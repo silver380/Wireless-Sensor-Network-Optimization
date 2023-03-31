@@ -32,7 +32,7 @@ if __name__ == "__main__":
    max_BW = util.calculate_max_BW(map_size, pop_sum,user_satisfaction_levels[-1])
    # print(max(map(max, blocks_population)), user_satisfaction_levels[-1])
    min_BW= util.calculate_min_BW(max_BW,map_size,user_satisfaction_levels[0],blocks_population)
-   print(map_size, max_BW, min_BW,pop_sum)
+   print(map_size, max_BW, min_BW, pop_sum)
    model = GA(n_iter, mut_prob, map_size, max_BW, min_BW, blocks_population, recomb_prob, tower_construction_cost,
                   tower_maintanance_cost, user_satisfaction_scores,user_satisfaction_levels, population_size, pop_avg, pop_sum)
    
