@@ -9,15 +9,15 @@ user_satisfaction_levels = []
 user_satisfaction_scores = []
 map_size = 0
 max_BW = 0
-n_iter = 200
+n_iter = 10000
 population_size = 50
 mut_prob = 0.1
 recomb_prob = 0.9
 pop_avg = 0
 pop_sum = 0
 if __name__ == "__main__":
+   
    problem_config = util.read_config(problem_config_file)
-
    tower_construction_cost = problem_config['tower_construction_cost']
    tower_maintanance_cost =problem_config['tower_maintanance_cost']
    user_satisfaction_levels = problem_config['user_satisfaction_levels']

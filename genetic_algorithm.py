@@ -147,10 +147,16 @@ class GeneticAlgorithm:
                 print(adj)
             sys.stdout = original_stdout
         
-        with open('user_satisfaction.txt', 'w') as f:
+        with open('user_satisfaction_score.txt', 'w') as f:
             sys.stdout = f
             for sat_score in ans.block_user_satisfaction_score:
                 print(sat_score)
+            sys.stdout = original_stdout
+        
+        with open('user_satisfaction_level.txt', 'w') as f:
+            sys.stdout = f
+            for sat_level in ans.block_user_satisfaction_level:
+                print(sat_level)
             sys.stdout = original_stdout
 
     
