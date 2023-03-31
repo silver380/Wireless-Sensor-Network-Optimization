@@ -156,7 +156,7 @@ class Chromosome:
                                                                             - self.pop_sum*self.user_satisfaction_penalty)
         towers_maintanance_cost_norm = 0
         if towers_maintanance_cost != 0:
-            towers_maintanance_cost_norm = towers_maintanance_cost / ((self.max_BW * len(self.towers) * self.tower_maintanance_cost))
+            towers_maintanance_cost_norm = (towers_maintanance_cost - self.min_BW) / ((self.max_BW * self.map_size ** 2 * self.tower_maintanance_cost) - self.min_BW)
         
         towers_constrcution_cost_norm = towers_constrcution_cost / (self.map_size ** 2 * self.tower_construction_cost)
        
