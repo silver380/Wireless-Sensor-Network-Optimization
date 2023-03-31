@@ -112,7 +112,7 @@ class Chromosome:
         for i, user_satisfaction_level in enumerate(self.user_satisfaction_levels):
             if user_received_bandwidth < user_satisfaction_level:
                 if i == 0:
-                    return 0
+                    return -20
                 return self.user_satisfaction_scores[i-1]
         return self.user_satisfaction_scores[len(self.user_satisfaction_levels)-1]
         
@@ -162,7 +162,7 @@ class Chromosome:
         self.user_satisfied = users_satisfaction_norm
         #self.fitness = 3 * (1 - towers_cost_norm) * users_satisfaction_norm
 
-        self.fitness = 3*users_satisfaction_norm - 2*(towers_maintanance_cost_norm + towers_constrcution_cost_norm)
+        self.fitness = 4*users_satisfaction_norm - 1.5*(towers_maintanance_cost_norm + towers_constrcution_cost_norm)
         #print(f"tower cost norm = {towers_cost_norm}, user norm = {users_satisfaction_norm}, fitness ={self.fitness}\n")
         
         #print(f"satis-norm: {users_satisfaction_norm}, tower-cost: {towers_cost}")

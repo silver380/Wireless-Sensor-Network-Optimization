@@ -1,6 +1,6 @@
 {
   "tower_construction_cost": 500,
-  "tower_maintanance_cost": 5000,
+  "tower_maintanance_cost": 500,
   "user_satisfaction_levels": [
     0.2,
     1,

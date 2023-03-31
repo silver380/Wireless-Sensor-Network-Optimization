@@ -32,6 +32,6 @@ def calculate_min_BW(max_BW, map_size, min_user_satisfaction_level, blocks_popul
      
 def calculate_k(population_size, iter):
     return round(2 + (population_size - 2) * iter / population_size)
-    # return (population_size//2)
-    #return 3
+    #return (population_size//2)
+    #return 5
      

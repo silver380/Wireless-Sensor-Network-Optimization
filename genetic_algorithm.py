@@ -30,12 +30,6 @@ class GeneticAlgorithm:
                 self.tower_construction_cost, self.tower_maintanance_cost, self.pop_avg)
             self.population.append(young_pop)
 
-    def tournament_selection(self, tour_pop, k):
-        parents = random.choices(tour_pop, k=k)
-        parents = sorted(parents, key=lambda agent: agent.fitness, reverse=True)
-        bestparent = parents[0]
-        return bestparent
-
     def roulette_wheel_selection(self):
         # Computes the totallity of the population fitness
         population_fitness = sum([chromosome.fitness for chromosome in self.population])
@@ -47,6 +41,12 @@ class GeneticAlgorithm:
         return np.random.choice(self.population, p=chromosome_probabilities)
     
     # Fitness proportional-roulette wheel/ Tournament selection
+    def tournament_selection(self, tour_pop, k):
+        parents = random.choices(tour_pop, k=k)
+        parents = sorted(parents, key=lambda agent: agent.fitness, reverse=True)
+        bestparent = parents[0]
+        return bestparent
+    
     def parent_selection(self):
         parents = []
         candidate_parents = self.population.copy()
@@ -59,7 +59,7 @@ class GeneticAlgorithm:
     
     def recombination(self):
         youngs = []
-        for _ in range(self.population_size//2):
+        for _ in range(self.population_size):
             parents = random.choices(self.parent_selection(), k=2)
             young1 = Chromosome(self.map_size, self.mut_prob, self.recomb_prob, self.max_BW, self.min_BW, self.blocks_population, self.user_satisfaction_scores, self.user_satisfaction_levels, 
                 self.tower_construction_cost, self.tower_maintanance_cost, self.pop_avg)
@@ -124,7 +124,7 @@ class GeneticAlgorithm:
             self.population = self.survival_selection(youngs).copy()
             self.current_iter += 1
             best_current = sorted(self.population, key=lambda agent: agent.fitness, reverse=True)[0]
-            print(f"current iteration: {self.current_iter}",
+            print(f"current iteration: {self.current_iter} / {self.n_iter}",
                   f", best fitness: {best_current.fitness}")
             print(f'towers: {len(best_current.towers)}, construction cost = {best_current.constrcuted_cost}, user satisfaction = {best_current.user_satisfied}')
             print("--------------------------------------------------------------------------------------------")

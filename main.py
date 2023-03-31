@@ -9,10 +9,10 @@ user_satisfaction_levels = []
 user_satisfaction_scores = []
 map_size = 0
 max_BW = 0
-n_iter = 200
+n_iter = 1000
 population_size = 50
-mut_prob = 0.5
-recomb_prob = 0.5
+mut_prob = 0.1
+recomb_prob = 0.9
 pop_avg = 0
 if __name__ == "__main__":
    problem_config = util.read_config(problem_config_file)
