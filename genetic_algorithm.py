@@ -137,17 +137,20 @@ class GeneticAlgorithm:
         original_stdout = sys.stdout
         with open('towers.txt', 'w') as f:
             sys.stdout = f
-            print(ans.towers)
+            for tower in ans.towers:
+                print(tower)
             sys.stdout = original_stdout
         
         with open('adj.txt', 'w') as f:
             sys.stdout = f
-            print(ans.adj_id)
+            for adj in ans.adj_id:
+                print(adj)
             sys.stdout = original_stdout
         
         with open('user_satisfaction.txt', 'w') as f:
             sys.stdout = f
-            print(ans.block_user_satisfaction_score)
+            for sat_score in ans.block_user_satisfaction_score:
+                print(sat_score)
             sys.stdout = original_stdout
 
     
