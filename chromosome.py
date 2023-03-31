@@ -162,7 +162,7 @@ class Chromosome:
         self.user_satisfied = users_satisfaction_norm
         #self.fitness = 3 * (1 - towers_cost_norm) * users_satisfaction_norm
 
-        self.fitness = 4*users_satisfaction_norm - 1.5*(towers_maintanance_cost_norm + towers_constrcution_cost_norm)
+        self.fitness = 2.5*users_satisfaction_norm - 1.5*(towers_maintanance_cost_norm + towers_constrcution_cost_norm)
         #print(f"tower cost norm = {towers_cost_norm}, user norm = {users_satisfaction_norm}, fitness ={self.fitness}\n")
         
         #print(f"satis-norm: {users_satisfaction_norm}, tower-cost: {towers_cost}")
