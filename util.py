@@ -24,7 +24,7 @@ def coverage(tower, x, y):
         return np.exp(-0.5 * (bx-ty) @ np.linalg.inv(sigma) @ (bx-ty).T)
 
 def calculate_max_BW(map_size, max_pop, max_user_satisfaction_level):
-    max_BW = max_user_satisfaction_level * max_pop / coverage((0,0,0), map_size-1, map_size-1)
+    max_BW = max_user_satisfaction_level * max_pop / coverage((0,0,0), map_size, map_size)
     return max_BW
 
 def calculate_min_BW(max_BW, map_size, min_user_satisfaction_level, blocks_population):
