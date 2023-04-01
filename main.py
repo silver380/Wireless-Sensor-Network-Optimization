@@ -3,14 +3,14 @@ from genetic_algorithm import GeneticAlgorithm as GA
 import math
 problem_config_file = 'problem_config.txt'
 map_path = 'blocks_population.txt'
-tower_construction_cost = -1
+tower_construction_cost = 0
 tower_maintanance_cost = []
 user_satisfaction_levels = []
 user_satisfaction_scores = []
 map_size = 0
 max_BW = 0
-n_iter = 10000
-population_size = 50
+n_iter = 200
+population_size = 10
 mut_prob = 0.1
 recomb_prob = 0.9
 pop_avg = 0
@@ -33,7 +33,7 @@ if __name__ == "__main__":
    # print(max(map(max, blocks_population)), user_satisfaction_levels[-1])
    min_BW= util.calculate_min_BW(max_BW,map_size,user_satisfaction_levels[0],blocks_population)
    print(map_size, max_BW, min_BW,pop_sum)
-   model = GA(n_iter, mut_prob, map_size, max_BW, min_BW, blocks_population, recomb_prob, tower_construction_cost,
+   model = GA(n_iter, mut_prob, map_size, blocks_population, recomb_prob, tower_construction_cost,
                   tower_maintanance_cost, user_satisfaction_scores,user_satisfaction_levels, population_size, pop_avg, pop_sum)
    
    model.run()
