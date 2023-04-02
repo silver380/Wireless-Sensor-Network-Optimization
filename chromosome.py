@@ -95,8 +95,8 @@ class Chromosome:
             reloc_prob = random.uniform(0,1)
             if reloc_prob <= self.mut_prob:
                 std = util.calculate_std(self.max_r)
-                add_x = random.gauss(self.min_r,std)
-                add_y = random.gauss(self.min_r,std)
+                add_x = random.uniform(-2,2) #random.gauss(self.min_r,std)
+                add_y = random.uniform(-2,2) #random.gauss(self.min_r,std)
                 new_x = self.towers[i][0] + add_x
                 new_x = min(max(0,new_x),20)
                 new_y = self.towers[i][0] + add_y
@@ -108,7 +108,7 @@ class Chromosome:
         for tower_id in range(len(self.towers)):
             add_r_prob = random.uniform(0,1)
             if add_r_prob <= self.mut_prob:
-                added_r = random.uniform(-1,1) #random.gauss(self.min_r,std)
+                added_r = random.uniform(-2,2) #random.gauss(self.min_r,std)
                 new_r = max(self.min_r,min(self.max_r,self.towers[tower_id][2] + added_r))#max(self.min_r,min(self.max_r,self.towers[tower_id][2] + added_r))
                 self.towers[tower_id] = (self.towers[tower_id][0],self.towers[tower_id][1], new_r, self.towers[tower_id][3], self.towers[tower_id][4])
 
@@ -187,7 +187,7 @@ class Chromosome:
                 self.block_user_satisfaction_level[i][j] =  Bw / block_population
                 self.block_user_satisfaction_score[i][j] = self.calculate_user_satisfaction_score(Bw / block_population)
                 users_satisfaction += (self.block_user_satisfaction_score[i][j] * block_population)
-                users_satisfaction_overdose += max(0, self.user_satisfaction_levels[-1] - self.block_user_satisfaction_level[i][j])
+                users_satisfaction_overdose += max(0, self.block_user_satisfaction_level[i][j] - self.user_satisfaction_levels[-1])
     
         # Calculate towers cost
         towers_constrcution_cost = len(self.towers) * self.tower_construction_cost
