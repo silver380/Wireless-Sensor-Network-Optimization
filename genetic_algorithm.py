@@ -48,9 +48,8 @@ class GeneticAlgorithm:
     
     def parent_selection(self):
         parents = []
-        candidate_parents = self.population.copy()
         for _ in range(self.population_size):
-            best_parent = self.tournament_selection(candidate_parents,util.calculate_k(len(candidate_parents), self.current_iter))
+            best_parent = self.tournament_selection(self.population, util.calculate_k(len(self.population), self.current_iter))
             parents.append(best_parent)
             # if (len(candidate_parents) > 2):
             #     candidate_parents.remove(best_parent)

@@ -21,7 +21,7 @@ class Chromosome:
         self.map_size = map_size
         self.max_r = (map_size**2 + map_size**2)**0.5
         self.min_r = (2**0.5)/2
-        self.max_r_std = 2
+        self.max_r_std = self.map_size / 5
         self.blocks_population = blocks_population
         self.user_satisfaction_scores = user_satisfaction_scores
         self.user_satisfaction_levels = user_satisfaction_levels
@@ -40,11 +40,15 @@ class Chromosome:
         self.init_chromosome()
 
     def init_chromosome(self):
-        num_tower = round(random.uniform(1, self.map_size ** 2))
+        city_s = self.map_size ** 2
+        max_sensor_coverage = (self.max_r_std ** 2) * math.pi
+        min_sensor_coverage = (self.min_r ** 2) * math.pi
+        num_tower = round(random.uniform(city_s/max_sensor_coverage,city_s/min_sensor_coverage))
         for _ in range(num_tower):
             x = random.uniform(0,20) 
             y = random.uniform(0,20)
-            r = random.gauss(self.min_r,self.max_r/self.max_r_std)
+            #r = random.gauss(self.min_r,self.max_r/self.max_r_std)
+            r = random.uniform(self.min_r,self.max_r_std)
             r = min(self.max_r, max(self.min_r,r))
             tower = (x, y, r, 0, 0)
             self.towers.append(tower)
@@ -79,7 +83,8 @@ class Chromosome:
         if append_prob <= self.mut_prob:
             x = random.uniform(0,20) 
             y = random.uniform(0,20)
-            r = random.gauss(self.min_r,self.max_r/self.max_r_std)
+            #r = random.gauss(self.min_r,self.max_r/self.max_r_std)
+            r = random.uniform(self.min_r,self.max_r_std)
             r = min(self.max_r, max(self.min_r,r))
             tower = (x, y, r, 0, 0)
             self.towers.append(tower)
@@ -103,10 +108,8 @@ class Chromosome:
         for tower_id in range(len(self.towers)):
             add_r_prob = random.uniform(0,1)
             if add_r_prob <= self.mut_prob:
-                # Gaussian mutation
-                std = util.calculate_std(self.max_r)
-                added_r = random.gauss(self.min_r,std)
-                new_r = max(self.min_r,min(self.max_r,self.towers[tower_id][2] + added_r))
+                added_r = random.uniform(-1,1) #random.gauss(self.min_r,std)
+                new_r = max(self.min_r,min(self.max_r,self.towers[tower_id][2] + added_r))#max(self.min_r,min(self.max_r,self.towers[tower_id][2] + added_r))
                 self.towers[tower_id] = (self.towers[tower_id][0],self.towers[tower_id][1], new_r, self.towers[tower_id][3], self.towers[tower_id][4])
 
 
@@ -117,12 +120,10 @@ class Chromosome:
             self.towers.pop(pop_id)
 
     def mutation(self):
-        # prob = random.uniform(0, 1)
-        # if prob <= self.mut_prob:
-        self.mut_append()
         self.mut_relocation_tower()
         self.mut_r()
         self.mut_pop()
+        self.mut_append()
         self.calculate_fitness()
 
     
@@ -163,7 +164,7 @@ class Chromosome:
 
     def calculate_fitness(self):
         self.update_adj()
-
+        users_satisfaction_overdose = 0
         users_satisfaction = 0
         for i in range(len(self.adj_id)):
             for j in range(len(self.adj_id[i])):
@@ -181,6 +182,7 @@ class Chromosome:
                 self.block_user_satisfaction_level[i][j] =  Bw / block_population
                 self.block_user_satisfaction_score[i][j] = self.calculate_user_satisfaction_score(Bw / block_population)
                 users_satisfaction += (self.block_user_satisfaction_score[i][j] * block_population)
+                users_satisfaction_overdose += max(0, self.user_satisfaction_levels[-1] - self.block_user_satisfaction_level[i][j])
     
         # Calculate towers cost
         towers_constrcution_cost = len(self.towers) * self.tower_construction_cost
@@ -194,16 +196,17 @@ class Chromosome:
         max_BW = util.calculate_max_BW(self.pop_sum,self.user_satisfaction_levels[-1],self.max_r)
         towers_maintanance_cost_norm = 0
         if towers_maintanance_cost != 0:
-            towers_maintanance_cost_norm = (towers_maintanance_cost) / (max_BW * (self.map_size ** 2) * self.tower_maintanance_cost)
+            towers_maintanance_cost_norm = towers_maintanance_cost / (max_BW * (self.map_size ** 2) * self.tower_maintanance_cost)
         
         towers_constrcution_cost_norm = towers_constrcution_cost / ((self.map_size ** 2) * self.tower_construction_cost)
 
         coverage_penalty = self.coverage_penalty() / (len(self.towers) * (self.max_r**2)*math.pi)
+        users_satisfaction_overdose_norm = users_satisfaction_overdose / (self.pop_sum * max_BW) 
         # Maximization
-        self.constrcuted_cost = towers_maintanance_cost_norm + towers_constrcution_cost_norm
+        self.constrcuted_cost = 10*towers_maintanance_cost_norm + towers_constrcution_cost_norm
         self.user_satisfied = users_satisfaction_norm
-        ##self.fitness = 4 * (1 - self.constrcuted_cost) * users_satisfaction_norm
+        self.fitness = 4 * (1 - self.constrcuted_cost - coverage_penalty - users_satisfaction_overdose_norm) * users_satisfaction_norm
         #self.fitness = (1 / (10 * self.constrcuted_cost + 40)) * users_satisfaction_norm
-        self.fitness = users_satisfaction_norm / (10*self.constrcuted_cost + coverage_penalty + 1)
-        #self.fitness = 2*users_satisfaction_norm - 50*(towers_maintanance_cost_norm + towers_constrcution_cost_norm)
+        #self.fitness = users_satisfaction_norm / (100*self.constrcuted_cost + 100*coverage_penalty + 1)
+        #self.fitness = 2*users_satisfaction_norm - 50*(towers_maintanance_cost_norm + towers_constrcution_cost_norm) - 10 * coverage_penalty - 10 * users_satisfaction_overdose_norm
        
