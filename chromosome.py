@@ -21,7 +21,7 @@ class Chromosome:
         self.map_size = map_size
         self.max_r = (map_size**2 + map_size**2)**0.5
         self.min_r = (2**0.5)/2
-        self.max_r_std = self.map_size / 5
+        self.max_r_std = self.map_size / 5 
         self.blocks_population = blocks_population
         self.user_satisfaction_scores = user_satisfaction_scores
         self.user_satisfaction_levels = user_satisfaction_levels
@@ -166,14 +166,19 @@ class Chromosome:
         self.update_adj()
         users_satisfaction_overdose = 0
         users_satisfaction = 0
+        zero_towers = 0
         for i in range(len(self.adj_id)):
             for j in range(len(self.adj_id[i])):
                 block_population = self.blocks_population[i][j]
                 tower_id = self.adj_id[i][j]
                 if tower_id == -1 or tower_id >= len(self.towers):
                     continue
-
                 tower = self.towers[tower_id]
+
+                if tower[4] == 0:
+                    zero_towers +=1
+                    continue
+
                 tower_blocks_population = self.towers[tower_id][4]
                 BW_prime = (tower[3] * block_population) / tower_blocks_population
                 Bw = util.coverage(tower, i + 0.5, j + 0.5) * BW_prime
@@ -202,10 +207,11 @@ class Chromosome:
 
         coverage_penalty = self.coverage_penalty() / (len(self.towers) * (self.max_r**2)*math.pi)
         users_satisfaction_overdose_norm = users_satisfaction_overdose / (self.pop_sum * max_BW) 
+        zero_towers_norm = zero_towers / (len(self.towers))
         # Maximization
         self.constrcuted_cost = 10*towers_maintanance_cost_norm + towers_constrcution_cost_norm
         self.user_satisfied = users_satisfaction_norm
-        self.fitness = 4 * (1 - self.constrcuted_cost - coverage_penalty - users_satisfaction_overdose_norm) * users_satisfaction_norm
+        self.fitness = 4 * (1 - self.constrcuted_cost - coverage_penalty - users_satisfaction_overdose_norm - zero_towers_norm) * users_satisfaction_norm
         #self.fitness = (1 / (10 * self.constrcuted_cost + 40)) * users_satisfaction_norm
         #self.fitness = users_satisfaction_norm / (100*self.constrcuted_cost + 100*coverage_penalty + 1)
         #self.fitness = 2*users_satisfaction_norm - 50*(towers_maintanance_cost_norm + towers_constrcution_cost_norm) - 10 * coverage_penalty - 10 * users_satisfaction_overdose_norm

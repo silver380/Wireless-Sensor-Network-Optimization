@@ -81,7 +81,7 @@ class GeneticAlgorithm:
     # mu + lambda
     def survival_selection(self, youngs):
         #TODO :k
-        k = 1
+        k = 2
         mpl = sorted(self.population.copy(), key=lambda agent: agent.fitness, reverse=True)[:self.population_size//k].copy() + youngs
         mpl = sorted(mpl, key=lambda agent: agent.fitness, reverse=True)
         mpl = mpl [:self.population_size].copy()
