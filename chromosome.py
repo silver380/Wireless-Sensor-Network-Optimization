@@ -4,7 +4,7 @@ import math
 
 class Chromosome:
     def __init__(self, map_size, mut_prob, recomb_prob, blocks_population, user_satisfaction_scores, user_satisfaction_levels, 
-                tower_construction_cost, tower_maintanance_cost, pop_avg, pop_sum):
+                tower_construction_cost, tower_maintanance_cost, pop_avg, pop_sum, calc_fitness):
         # List of towers: (x, y, r, BW, population_sum)
         self.towers = []
 
@@ -36,8 +36,9 @@ class Chromosome:
         self.user_satisfied = 0
         self.user_satisfaction_penalty = -20
         self.epsilon = 1e-10
+        self.calc_fitness = calc_fitness
         self.init_chromosome()
-        
+
     def init_chromosome(self):
         num_tower = round(random.uniform(1, self.map_size ** 2))
         for _ in range(num_tower):
@@ -48,7 +49,8 @@ class Chromosome:
             tower = (x, y, r, 0, 0)
             self.towers.append(tower)
 
-        self.calculate_fitness()
+        if self.calc_fitness:
+            self.calculate_fitness()
     
     def adj_tower(self,i,j):
         min_dist = 1000000
@@ -85,8 +87,8 @@ class Chromosome:
     
     def mut_relocation_tower(self):
         for i in range(len(self.towers)):
-            append_prob = random.uniform(0,1)
-            if append_prob <= self.mut_prob:
+            reloc_prob = random.uniform(0,1)
+            if reloc_prob <= self.mut_prob:
                 std = util.calculate_std(self.max_r)
                 add_x = random.gauss(self.min_r,std)
                 add_y = random.gauss(self.min_r,std)
@@ -104,7 +106,7 @@ class Chromosome:
                 # Gaussian mutation
                 std = util.calculate_std(self.max_r)
                 added_r = random.gauss(self.min_r,std)
-                new_r = min(self.min_r,max(self.max_r,self.towers[tower_id][2] + added_r))
+                new_r = max(self.min_r,min(self.max_r,self.towers[tower_id][2] + added_r))
                 self.towers[tower_id] = (self.towers[tower_id][0],self.towers[tower_id][1], new_r, self.towers[tower_id][3], self.towers[tower_id][4])
 
 
@@ -115,6 +117,8 @@ class Chromosome:
             self.towers.pop(pop_id)
 
     def mutation(self):
+        # prob = random.uniform(0, 1)
+        # if prob <= self.mut_prob:
         self.mut_append()
         self.mut_relocation_tower()
         self.mut_r()

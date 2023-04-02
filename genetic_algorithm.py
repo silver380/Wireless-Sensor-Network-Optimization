@@ -26,7 +26,7 @@ class GeneticAlgorithm:
     def init_population(self):
         for _ in range(self.population_size):
             young_pop = Chromosome(self.map_size, self.mut_prob, self.recomb_prob, self.blocks_population, self.user_satisfaction_scores, self.user_satisfaction_levels, 
-                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_avg, self.pop_sum)
+                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_avg, self.pop_sum, True)
             self.population.append(young_pop)
 
     def roulette_wheel_selection(self):
@@ -56,20 +56,19 @@ class GeneticAlgorithm:
             #     candidate_parents.remove(best_parent)
         return parents
     
-    def recombination(self):
+    def recombination(self, mating_pool):
         youngs = []
         for _ in range(self.population_size//2):
-            parents = random.choices(self.parent_selection(), k=2)
+            parents = random.choices(mating_pool, k=2)
             young1 = Chromosome(self.map_size, self.mut_prob, self.recomb_prob, self.blocks_population, self.user_satisfaction_scores, self.user_satisfaction_levels, 
-                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_avg, self.pop_sum)
+                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_avg, self.pop_sum, False)
             
             young2 = Chromosome(self.map_size, self.mut_prob, self.recomb_prob, self.blocks_population, self.user_satisfaction_scores, self.user_satisfaction_levels, 
-                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_avg, self.pop_sum)
-            crossover_point = random.randint(1, min(len(parents[0].towers), len(parents[1].towers)) - 1)
+                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_avg, self.pop_sum, False)
+            # TODO: conditions for number of towers
+            crossover_point = random.randint(1, max(min(len(parents[0].towers), len(parents[1].towers)) - 1,1))
             young1.towers = parents[0].towers[:crossover_point].copy() + parents[1].towers[crossover_point:].copy()
             young2.towers = parents[1].towers[:crossover_point].copy() + parents[0].towers[crossover_point:].copy()
-            young1.calculate_fitness()
-            young2.calculate_fitness()
             youngs.append(young1)
             youngs.append(young2)
         return youngs
@@ -96,7 +95,8 @@ class GeneticAlgorithm:
     def run(self):
         self.init_population()
         for _ in range(self.n_iter):
-            youngs = self.recombination().copy()
+            parents = self.parent_selection().copy()
+            youngs = self.recombination(parents).copy()
             youngs = self.all_mutation(youngs).copy()
             self.population = self.survival_selection(youngs).copy()
             self.current_iter += 1
@@ -106,33 +106,30 @@ class GeneticAlgorithm:
                   f", best fitness: {best_current.fitness}")
             print(f'towers: {len(best_current.towers)}, construction cost = {best_current.constrcuted_cost}, user satisfaction = {best_current.user_satisfied}')
             print("--------------------------------------------------------------------------------------------")
-            
+
         ans =  sorted(self.population, key=lambda agent: agent.fitness, reverse=True)[0]
-        
+
         original_stdout = sys.stdout
         with open('towers.txt', 'w') as f:
             sys.stdout = f
             for tower in ans.towers:
                 print(tower)
             sys.stdout = original_stdout
-        
+
         with open('adj.txt', 'w') as f:
             sys.stdout = f
             for adj in ans.adj_id:
                 print(adj)
             sys.stdout = original_stdout
-        
+
         with open('user_satisfaction_score.txt', 'w') as f:
             sys.stdout = f
             for sat_score in ans.block_user_satisfaction_score:
                 print(sat_score)
             sys.stdout = original_stdout
-        
+
         with open('user_satisfaction_level.txt', 'w') as f:
             sys.stdout = f
             for sat_level in ans.block_user_satisfaction_level:
                 print(sat_level)
             sys.stdout = original_stdout
-
-    
-
