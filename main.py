@@ -1,5 +1,5 @@
 import util
-from genetic_algorithm import GeneticAlgorithm as GA
+from evolutionary_algorithm import EvolutionaryAlgorithm as EA
 import math
 
 problem_config_file = 'problem_config.txt'
@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
    print(map_size, max_BW, min_BW,pop_sum)
 
-   model = GA(n_iter, mut_prob, map_size, blocks_population, recomb_prob, tower_construction_cost,
+   model = EA(n_iter, mut_prob, map_size, blocks_population, recomb_prob, tower_construction_cost,
                   tower_maintanance_cost, user_satisfaction_scores,user_satisfaction_levels, population_size, pop_avg, pop_sum)
    model.run()
 
