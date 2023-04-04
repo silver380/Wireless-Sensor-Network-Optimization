@@ -31,7 +31,7 @@ if __name__ == "__main__":
    pop_avg /= (map_size*map_size)
    #pop_avg = math.log(1+pop_avg)
    print(pop_avg)
-   print
+
    max_BW = util.calculate_max_BW(map_size, pop_sum,user_satisfaction_levels[-1])
    # print(max(map(max, blocks_population)), user_satisfaction_levels[-1])
    min_BW= util.calculate_min_BW(max_BW,map_size,user_satisfaction_levels[-1],blocks_population)

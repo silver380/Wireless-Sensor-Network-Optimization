@@ -131,9 +131,9 @@ class Chromosome:
     def adjust_power(self):
         for tower_id in range(len(self.towers)):
             tower_population = self.towers[tower_id][4]
-            max_bx = util.calculate_max_BW(tower_population,self.user_satisfaction_levels[-1],self.towers[tower_id][2])
+            max_bw = util.calculate_max_BW(tower_population,self.user_satisfaction_levels[-1],self.towers[tower_id][2])
             min_bw = util.calculate_max_BW(tower_population,self.user_satisfaction_levels[1],self.towers[tower_id][2])
-            bw = random.uniform(min_bw,max_bx)
+            bw = random.uniform(min_bw,max_bw)
             new_tower = (self.towers[tower_id][0],self.towers[tower_id][1],self.towers[tower_id][2], bw, self.towers[tower_id][4])
             self.towers[tower_id] = new_tower
 
@@ -188,9 +188,10 @@ class Chromosome:
                 users_satisfaction_overdose += max(0, self.block_user_satisfaction_level[i][j] - self.user_satisfaction_levels[-1])
     
         #count zero towers
-        for towr in self.towers:
+        for tower in self.towers:
             if tower[4] == 0:
                 zero_towers +=1
+
         # Calculate towers cost
         towers_constrcution_cost = len(self.towers) * self.tower_construction_cost
         towers_maintanance_cost  = 0

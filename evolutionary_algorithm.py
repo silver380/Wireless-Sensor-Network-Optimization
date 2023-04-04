@@ -104,8 +104,8 @@ class EvolutionaryAlgorithm:
             print(f"current iteration: {self.current_iter} / {self.n_iter}",
                   f", best fitness: {best_current.fitness}")
             print(f'towers: {len(best_current.towers)}, construction cost = {best_current.constrcution_cost / 1e7}')
-            print(f'user satisfaction = {best_current.curr_user_satisfaction_score} coverage :{best_current.coverage}')
-            print(f'overdose {best_current.overdose}')
+            print(f'user satisfaction = {best_current.curr_user_satisfaction_score} coverage = {best_current.coverage}')
+            print(f'overdose = {best_current.overdose}')
             print("------------------------------------------------------------------------------------------------------")
 
         ans =  sorted(self.population, key=lambda agent: agent.fitness, reverse=True)[0]
@@ -114,13 +114,13 @@ class EvolutionaryAlgorithm:
         with open('towers.txt', 'w') as f:
             sys.stdout = f
             for tower in ans.towers:
-                print(tower)
+                print(*tower)
             sys.stdout = original_stdout
 
         with open('adj.txt', 'w') as f:
             sys.stdout = f
             for adj in ans.adj_id:
-                print(adj)
+                print(*adj)
             sys.stdout = original_stdout
 
         with open('user_satisfaction_score.txt', 'w') as f:
