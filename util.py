@@ -30,11 +30,11 @@ def calculate_max_BW(max_pop, max_user_satisfaction_level, r):
     return max_BW
 
 def calculate_min_BW(max_BW, map_size, min_user_satisfaction_level, blocks_population):
-    min_BW = max_BW
+    min_BW = 0
     for i in range(map_size):
         for j in range(map_size):
-            min_BW = min(min_BW, blocks_population[i][j] * min_user_satisfaction_level / coverage((i,j,0,0,0), i, j))
-    return min_BW
+            min_BW +=  blocks_population[i][j] * min_user_satisfaction_level / coverage((i + 0.5,j + 0.5,0,0,0), i + 0.5, j + 0.5)
+    return min_BW / (map_size**2)
 
 def calculate_distance(tower,i,j):
         return ((tower[0]-i)**2 + (tower[1]-j)**2)**0.5
