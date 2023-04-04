@@ -4,7 +4,7 @@ import random
 from  chromosome import Chromosome
 import sys
 
-class GeneticAlgorithm:
+class EvolutionaryAlgorithm:
     def __init__(self, n_iter, mut_prob, map_size, blocks_population, recomb_prob, tower_construction_cost,
                   tower_maintanance_cost, user_satisfaction_scores,user_satisfaction_levels, population_size, pop_avg, pop_sum):
         self.n_iter = n_iter
@@ -81,7 +81,7 @@ class GeneticAlgorithm:
     # mu + lambda
     def survival_selection(self, youngs):
         #TODO :k
-        k = 2
+        k = 1
         mpl = sorted(self.population.copy(), key=lambda agent: agent.fitness, reverse=True)[:self.population_size//k].copy() + youngs
         mpl = sorted(mpl, key=lambda agent: agent.fitness, reverse=True)
         mpl = mpl [:self.population_size].copy()
@@ -103,8 +103,10 @@ class GeneticAlgorithm:
             best_current = sorted(self.population, key=lambda agent: agent.fitness, reverse=True)[0]
             print(f"current iteration: {self.current_iter} / {self.n_iter}",
                   f", best fitness: {best_current.fitness}")
-            print(f'towers: {len(best_current.towers)}, construction cost = {best_current.constrcuted_cost}, user satisfaction = {best_current.user_satisfied}')
-            print("--------------------------------------------------------------------------------------------")
+            print(f'towers: {len(best_current.towers)}, construction cost = {best_current.constrcution_cost / 1e7}')
+            print(f'user satisfaction = {best_current.curr_user_satisfaction_score} coverage :{best_current.coverage}')
+            print(f'overdose {best_current.overdose}')
+            print("------------------------------------------------------------------------------------------------------")
 
         ans =  sorted(self.population, key=lambda agent: agent.fitness, reverse=True)[0]
 
@@ -124,11 +126,11 @@ class GeneticAlgorithm:
         with open('user_satisfaction_score.txt', 'w') as f:
             sys.stdout = f
             for sat_score in ans.block_user_satisfaction_score:
-                print(sat_score)
+                print(*sat_score)
             sys.stdout = original_stdout
 
         with open('user_satisfaction_level.txt', 'w') as f:
             sys.stdout = f
             for sat_level in ans.block_user_satisfaction_level:
-                print(sat_level)
+                print(*sat_level)
             sys.stdout = original_stdout
