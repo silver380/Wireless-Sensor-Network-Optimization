@@ -30,29 +30,26 @@ class EvolutionaryAlgorithm:
             self.population.append(young_pop)
 
     def roulette_wheel_selection(self):
-        # Computes the totallity of the population fitness
         population_fitness = sum([chromosome.fitness for chromosome in self.population])
-        
-        # Computes for each chromosome the probability 
         chromosome_probabilities = [chromosome.fitness/population_fitness for chromosome in self.population]
-        
-        # Selects one chromosome based on the computed probabilities
         return np.random.choice(self.population, p=chromosome_probabilities)
     
     # Fitness proportional-roulette wheel/ Tournament selection
     def tournament_selection(self, tour_pop, k):
-        parents = random.choices(tour_pop, k=k)
-        parents = sorted(parents, key=lambda agent: agent.fitness, reverse=True)
-        bestparent = parents[0]
-        return bestparent
+        try:
+            parents = random.sample(tour_pop, k)  # random.choices(tour_pop, k=k)
+            parents = sorted(parents, key=lambda agent: agent.fitness, reverse=True)
+            bestparent = parents[0]
+            return bestparent
+        except:
+            print(f"k: {k}, tour_pop: {len(tour_pop)}")
+        
     
     def parent_selection(self):
         parents = []
         for _ in range(self.population_size):
             best_parent = self.tournament_selection(self.population, util.calculate_k(len(self.population), self.current_iter))
             parents.append(best_parent)
-            # if (len(candidate_parents) > 2):
-            #     candidate_parents.remove(best_parent)
         return parents
     
     def recombination(self, mating_pool):
@@ -75,12 +72,11 @@ class EvolutionaryAlgorithm:
     def all_mutation(self, youngs):
         for young in youngs:
             young.mutation()
-
         return youngs
 
     # mu + lambda
     def survival_selection(self, youngs):
-        #TODO :k
+        #TODO: k
         k = 1
         mpl = sorted(self.population.copy(), key=lambda agent: agent.fitness, reverse=True)[:self.population_size//k].copy() + youngs
         mpl = sorted(mpl, key=lambda agent: agent.fitness, reverse=True)
@@ -93,20 +89,24 @@ class EvolutionaryAlgorithm:
 
     def run(self):
         self.init_population()
+
         for _ in range(self.n_iter):
             parents = self.parent_selection().copy()
             youngs = self.recombination(parents).copy()
             youngs = self.all_mutation(youngs).copy()
             self.population = self.survival_selection(youngs).copy()
+
             self.current_iter += 1
-            util.curr_iter += 1
+            util.CURRENT_ITERATION += 1
+
             best_current = sorted(self.population, key=lambda agent: agent.fitness, reverse=True)[0]
+
             print(f"current iteration: {self.current_iter} / {self.n_iter}",
                   f", best fitness: {best_current.fitness}")
             print(f'towers: {len(best_current.towers)}, construction cost = {best_current.constrcution_cost / 1e7}')
             print(f'user satisfaction = {best_current.curr_user_satisfaction_score} coverage = {best_current.coverage}')
             print(f'overdose = {best_current.overdose}')
-            print("------------------------------------------------------------------------------------------------------")
+            print("------------------------------------------------------------------------------------------")
 
         ans =  sorted(self.population, key=lambda agent: agent.fitness, reverse=True)[0]
 
