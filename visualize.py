@@ -2,62 +2,72 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 from numpy import loadtxt
-import pandas as pd
 
 def user_satisfaction_score(min_stais, max_stais):
-    scores = loadtxt('user_satisfaction_score.txt', delimiter=' ')
+    scores = np.array(loadtxt('user_satisfaction_score.txt', delimiter=' '), dtype="int")
     sns.set_theme()
     f, ax = plt.subplots(figsize=(20, 20))
-    s = sns.heatmap(scores, annot=True, fmt='.1f', linewidth=.5, ax=ax, vmin=min_stais, vmax=max_stais, cmap=sns.cubehelix_palette(as_cmap=True))
-    s.invert_yaxis()
-    plt.show()
-
-def user_satisfaction_level():
-    scores = loadtxt('user_satisfaction_level.txt', delimiter=' ')
-    towers = loadtxt('towers.txt', delimiter=' ')
-    x = []
-    y = []
-    for tower in towers:
-        x.append(tower[0])
-    for tower in towers:
-        y.append(tower[1])
-    sns.set_theme()
-    f, ax = plt.subplots(figsize=(20, 20))
-    # s = sns.heatmap(scores, annot=True, fmt='.1f', linewidth=.5, ax=ax, cmap=sns.cubehelix_palette(as_cmap=True))
+    s = sns.heatmap(scores, annot=True, linewidth=.5, ax=ax, vmin=min_stais, vmax=max_stais, cmap=sns.cubehelix_palette(as_cmap=True))
     # s.invert_yaxis()
-
-    ax2 = ax.twinx()
-    s2 = sns.scatterplot(x=x,y=y, ax=ax)
     plt.show()
-def tower_allocation():
-    # Create a 2D array with random values
+
+def user_satisfaction_level(x_locs, y_locs, r):
+    levels = np.array(loadtxt('user_satisfaction_level.txt', delimiter=' '), dtype="float")
+    sns.set_theme()
+    f, ax = plt.subplots(figsize=(20, 20))
+    s = sns.heatmap(levels, annot=True, fmt='.1f', linewidth=.5, ax=ax, cmap=sns.cubehelix_palette(as_cmap=True))
+    # s.invert_yaxis()
+    # sns.scatterplot(x=x_locs,y=y_locs, ax=ax)
+    plt.yticks(np.arange(21),np.arange(21),rotation=0, fontsize="10", va="center")
+    plt.xticks(np.arange(21),np.arange(21),rotation=0, fontsize="10", va="center")
+    plt.scatter(y_locs, x_locs, color='black', s=100)
+    # for i in range(len(x_locs)):
+    #     if i == 35 or i == 5:
+    #         circle = plt.Circle((y_locs[i], x_locs[i]), radius=r[i], fill=False)
+    #         plt.gca().add_patch(circle)
+    # plt.xlim(min(y_locs)-5, max(y_locs)+5)
+    # plt.ylim(min(x_locs)-5, max(x_locs)+5)
+
+    plt.show()
+
+def tower_allocation(x_locs, y_locs, r):
     grid = np.array(loadtxt('adj.txt', delimiter=' '), dtype="int")
-
-    # grid = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-
-    # Define a color map for the numbers
-    cmap = sns.color_palette("Spectral", n_colors=33)
-    f, ax = plt.subplots(figsize=(20, 20))
-
-    # Create a heatmap using Seaborn
-    sns.heatmap(grid, cmap=cmap, annot=True, fmt='d', ax=ax)
-
-    # Display the plot
+    n_colors = grid.max() + 1
+    cmap = sns.color_palette("Spectral", n_colors=n_colors)
+    f, ax = plt.subplots(figsize=(30, 30))
+    s = sns.heatmap(grid, cmap=cmap, annot=True, ax=ax)
+    plt.yticks(np.arange(21),np.arange(21),rotation=0, fontsize="10", va="center")
+    plt.xticks(np.arange(21),np.arange(21),rotation=0, fontsize="10", va="center")
+    plt.scatter(y_locs, x_locs, color='black', s=40)
+    for i in range(len(x_locs)):
+        circle = plt.Circle((y_locs[i], x_locs[i]), radius=r[i], fill=False)
+        plt.gca().add_patch(circle)
+    plt.xlim(min(y_locs)-5, max(y_locs)+5)
+    plt.ylim(min(x_locs)-5, max(x_locs)+5)
     plt.show()
 
-def towers_location():
-    # data = np.array(loadtxt('towers.txt', delimiter=' '), dtype="int")
-    data = [1,2,3,0.9]
-    x = [10,2,3,4,5,6,8,9,0]
-    y = [20,4,6,2,6,2,7,5,6]
-    f, ax = plt.subplots(figsize=(20, 20))
-    sns.kdeplot(x=x, y=y, zorder=0, n_levels=6, shade=True,
-                cbar=True, shade_lowest=False, cmap='viridis')
+    # plt.show()
+
+def towers_location(x_locs, y_locs, r):
+    plt.scatter(x_locs, y_locs, color='red', s=50)
+    for i in range(len(x_locs)):
+        circle = plt.Circle((x_locs[i], y_locs[i]), radius=r[i], fill=False)
+        plt.gca().add_patch(circle)
+    plt.xlim(min(x_locs), max(x_locs))
+    plt.ylim(min(y_locs), max(y_locs))
     plt.show()
 
+def get_towers():
+    towers = np.array(loadtxt('towers.txt', delimiter=' '), dtype="float")
+    x_locs, y_locs, r = [], [], []
+    x_locs = [tower[0] for tower in towers]
+    y_locs = [tower[1] for tower in towers]
+    r = [tower[2] for tower in towers]
+    return x_locs, y_locs, r
 
 if __name__ == '__main__':
-    # user_satisfaction_score(-20, 40)
-    user_satisfaction_level()
-    # tower_allocation()
-    # towers_location()
+    x_locs, y_locs, r = get_towers()
+    user_satisfaction_score(0, 40)
+    user_satisfaction_level(x_locs, y_locs, r)
+    tower_allocation(x_locs, y_locs, r)
+    towers_location(x_locs, y_locs, r)
