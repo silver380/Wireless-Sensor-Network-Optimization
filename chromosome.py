@@ -58,7 +58,7 @@ class Chromosome:
     
     def adj_tower(self,i,j):
         min_dist = 1000000
-        min_dist_id = 0
+        min_dist_id = -1
         for tower_id, tower in enumerate(self.towers):
             dist = util.calculate_distance(tower, i+0.5, j+0.5)
             if (dist < tower[2] - self.epsilon) and (dist < min_dist - self.epsilon):
@@ -68,6 +68,9 @@ class Chromosome:
     
     def update_adj(self):
         #TODO better order
+        for tower_id in range(len(self.towers)):
+            self.towers[tower_id] = (self.towers[tower_id][0],self.towers[tower_id][1],self.towers[tower_id][2],self.towers[tower_id][3],0)
+
         for i in range(self.map_size):
             for j in range(self.map_size):
                 candidate =  self.adj_tower(i,j)
@@ -81,6 +84,7 @@ class Chromosome:
     def mut_append(self):
         append_prob = random.uniform(0,1)
         if append_prob <= self.mut_prob:
+            append_num = random.randint(1,10)
             x = random.uniform(0,20) 
             y = random.uniform(0,20)
             #r = random.gauss(self.min_r,self.max_r/self.max_r_std)
@@ -99,7 +103,7 @@ class Chromosome:
                 add_y = random.uniform(-1,1) #random.gauss(self.min_r,std)
                 new_x = self.towers[i][0] + add_x
                 new_x = min(max(0,new_x),20)
-                new_y = self.towers[i][0] + add_y
+                new_y = self.towers[i][1] + add_y
                 new_y = min(max(0,new_y),20)
                 self.towers[i] = (new_x,new_y,self.towers[i][2], self.towers[i][3], self.towers[i][4])
 
@@ -131,9 +135,10 @@ class Chromosome:
     def adjust_power(self):
         for tower_id in range(len(self.towers)):
             tower_population = self.towers[tower_id][4]
-            max_bx = util.calculate_max_BW(tower_population,self.user_satisfaction_levels[-1],self.towers[tower_id][2])
+            max_bw = util.calculate_max_BW(tower_population,self.user_satisfaction_levels[-1],self.towers[tower_id][2])
             min_bw = util.calculate_max_BW(tower_population,self.user_satisfaction_levels[1],self.towers[tower_id][2])
-            bw = random.uniform(min_bw,max_bx)
+            #vchange this to be able to have different user satisfaction level.
+            bw = max_bw #random.uniform(min_bw,max_bw)
             new_tower = (self.towers[tower_id][0],self.towers[tower_id][1],self.towers[tower_id][2], bw, self.towers[tower_id][4])
             self.towers[tower_id] = new_tower
 
@@ -188,8 +193,8 @@ class Chromosome:
                 users_satisfaction_overdose += max(0, self.block_user_satisfaction_level[i][j] - self.user_satisfaction_levels[-1])
     
         #count zero towers
-        for towr in self.towers:
-            if tower[4] == 0:
+        for t in self.towers:
+            if t[4] == 0:
                 zero_towers +=1
         # Calculate towers cost
         towers_constrcution_cost = len(self.towers) * self.tower_construction_cost
@@ -212,9 +217,10 @@ class Chromosome:
         zero_towers_norm = zero_towers / (len(self.towers))
         # Maximization
         self.constrcution_cost = towers_maintanance_cost + towers_constrcution_cost
+        self.constrcution_cost_norm = (towers_maintanance_cost_norm + towers_maintanance_cost_norm)/2
         self.curr_user_satisfaction_score = users_satisfaction_norm
         self.coverage = coverage_penalty
         self.overdose = users_satisfaction_overdose_norm
        
-        self.fitness = (5 * (1 - towers_constrcution_cost_norm) * ( 1 - towers_maintanance_cost_norm) 
-                        * (1 - 100*coverage_penalty) * (1-zero_towers_norm) * (1-(1e28)*users_satisfaction_overdose_norm) * users_satisfaction_norm)
+        self.fitness = (4 * (1 - towers_constrcution_cost_norm) * (1 - towers_maintanance_cost_norm) 
+                        * (1 - (100)*coverage_penalty) * (1-zero_towers_norm) * (1-(1e28)*users_satisfaction_overdose_norm) * users_satisfaction_norm)

@@ -2,6 +2,7 @@ import json
 import numpy as np
 import math
 curr_iter = 0
+n_iter = 200
 def read_config(file_path):
     data = {}
     with open(file_path) as f:
@@ -63,7 +64,7 @@ def overlap_area(x1, y1, r1, x2, y2, r2):
     return r1**2 * a1 + r2**2 * a2 - d * r1 * math.sin(a1)
 
 def calculate_k(population_size, iter):
-    return round(2 + (population_size - 2) * iter / population_size)
-    #return (population_size//2)
+    #return max(2, population_size * iter // n_iter )
+    return (population_size//10)
     #return 5
      

@@ -41,10 +41,13 @@ class EvolutionaryAlgorithm:
     
     # Fitness proportional-roulette wheel/ Tournament selection
     def tournament_selection(self, tour_pop, k):
-        parents = random.choices(tour_pop, k=k)
-        parents = sorted(parents, key=lambda agent: agent.fitness, reverse=True)
-        bestparent = parents[0]
-        return bestparent
+        try:
+            parents = random.sample(tour_pop, k=k)
+            parents = sorted(parents, key=lambda agent: agent.fitness, reverse=True)
+            bestparent = parents[0]
+            return bestparent
+        except:
+            print(f"k: {k}, pop: {len(tour_pop)}")
     
     def parent_selection(self):
         parents = []
@@ -103,9 +106,9 @@ class EvolutionaryAlgorithm:
             best_current = sorted(self.population, key=lambda agent: agent.fitness, reverse=True)[0]
             print(f"current iteration: {self.current_iter} / {self.n_iter}",
                   f", best fitness: {best_current.fitness}")
-            print(f'towers: {len(best_current.towers)}, construction cost = {best_current.constrcution_cost / 1e7}')
+            print(f'towers: {len(best_current.towers)}, construction cost: {best_current.constrcution_cost / 1e7}')
             print(f'user satisfaction = {best_current.curr_user_satisfaction_score} coverage :{best_current.coverage}')
-            print(f'overdose {best_current.overdose}')
+            print(f'overdose: {best_current.overdose}')
             print("------------------------------------------------------------------------------------------------------")
 
         ans =  sorted(self.population, key=lambda agent: agent.fitness, reverse=True)[0]

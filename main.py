@@ -1,6 +1,5 @@
 import util
 from evolutionary_algorithm import EvolutionaryAlgorithm as EA
-import math
 
 problem_config_file = 'problem_config.txt'
 map_path = 'blocks_population.txt'
@@ -10,7 +9,7 @@ user_satisfaction_levels = []
 user_satisfaction_scores = []
 map_size = 0
 max_BW = 0
-n_iter = 200
+n_iter = 1000
 population_size = 50
 mut_prob = 0.1
 recomb_prob = 0.9
