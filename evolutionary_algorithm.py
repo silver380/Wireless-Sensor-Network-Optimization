@@ -117,13 +117,13 @@ class EvolutionaryAlgorithm:
         with open('towers.txt', 'w') as f:
             sys.stdout = f
             for tower in ans.towers:
-                print(tower)
+                print(*tower)
             sys.stdout = original_stdout
 
         with open('adj.txt', 'w') as f:
             sys.stdout = f
             for adj in ans.adj_id:
-                print(adj)
+                print(*adj)
             sys.stdout = original_stdout
 
         with open('user_satisfaction_score.txt', 'w') as f:
