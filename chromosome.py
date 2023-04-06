@@ -138,7 +138,7 @@ class Chromosome:
             max_bw = util.calculate_max_BW(tower_population,self.user_satisfaction_levels[-1],self.towers[tower_id][2])
             min_bw = util.calculate_max_BW(tower_population,self.user_satisfaction_levels[1],self.towers[tower_id][2])
             #vchange this to be able to have different user satisfaction level.
-            bw = max(random.uniform(min_bw + random.uniform(min_bw,max_bw/10),max_bw),max_bw)
+            bw = max(random.uniform(min_bw + random.uniform(min_bw,10*min_bw),max_bw),max_bw)
             new_tower = (self.towers[tower_id][0],self.towers[tower_id][1],self.towers[tower_id][2], bw, self.towers[tower_id][4])
             self.towers[tower_id] = new_tower
 
@@ -221,6 +221,6 @@ class Chromosome:
         self.curr_user_satisfaction_score = users_satisfaction_norm
         self.coverage = coverage_penalty
         self.overdose = users_satisfaction_overdose_norm
-       
-        self.fitness = (4 * (1 - towers_constrcution_cost_norm) * (1 - towers_maintanance_cost_norm) 
-                        * (1 - (100)*coverage_penalty) * (1-zero_towers_norm) * (1-(1e28)*users_satisfaction_overdose_norm) * users_satisfaction_norm)
+        negative = -1 if ((1-(1e28)*users_satisfaction_overdose_norm) < 0 or 1 - (100)*coverage_penalty <0) else 1 
+        self.fitness = negative* (4 * (1 - towers_constrcution_cost_norm) * (1 - towers_maintanance_cost_norm) 
+                        * (abs(1 - (100)*coverage_penalty)) * (1-zero_towers_norm) * (abs(1-(1e28)*users_satisfaction_overdose_norm)) * users_satisfaction_norm)
