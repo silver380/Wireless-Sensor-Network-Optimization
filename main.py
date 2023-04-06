@@ -11,8 +11,8 @@ map_size = 0
 max_BW = 0
 n_iter = 200
 population_size = 50
-mut_prob = 0.9
-recomb_prob = 0.9
+mut_prob = 0.1
+recomb_prob = 0.1
 pop_avg = 0
 pop_sum = 0
 

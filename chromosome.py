@@ -61,22 +61,22 @@ class Chromosome:
         min_dist_id = -1
         for tower_id, tower in enumerate(self.towers):
             dist = util.calculate_distance(tower, i+0.5, j+0.5)
-            if (dist < tower[2] - self.epsilon) and (dist < min_dist - self.epsilon):
+            if  (dist < min_dist - self.epsilon) : #(dist < tower[2] - self.epsilon) and (dist < min_dist - self.epsilon):
                 min_dist_id = tower_id
                 min_dist = dist
-        return min_dist_id
+        return min_dist_id, min_dist
     
     def update_adj(self):
         #TODO better order
         for tower_id in range(len(self.towers)):
-            self.towers[tower_id] = (self.towers[tower_id][0],self.towers[tower_id][1],self.towers[tower_id][2],self.towers[tower_id][3],0)
+            self.towers[tower_id] = (self.towers[tower_id][0],self.towers[tower_id][1],0,self.towers[tower_id][3],0)
 
         for i in range(self.map_size):
             for j in range(self.map_size):
-                candidate =  self.adj_tower(i,j)
+                candidate,min_dist=  self.adj_tower(i,j)
                 self.adj_id[i][j] = candidate
                 self.towers[candidate] = (self.towers[candidate][0],self.towers[candidate][1]
-                                          ,self.towers[candidate][2],self.towers[candidate][3], self.towers[candidate][4] + self.blocks_population[i][j])
+                                          ,max(self.towers[candidate][2], min_dist),self.towers[candidate][3], self.towers[candidate][4] + self.blocks_population[i][j])
 
 
         self.adjust_power()
@@ -113,7 +113,7 @@ class Chromosome:
             add_r_prob = random.uniform(0,1)
             if add_r_prob <= self.mut_prob:
                 added_r = random.uniform(-1,1) #random.gauss(self.min_r,std)
-                new_r = max(self.min_r,min(self.max_r,self.towers[tower_id][2] + added_r))#max(self.min_r,min(self.max_r,self.towers[tower_id][2] + added_r))
+                new_r = max(self.min_r,min(self.max_r,self.towers[tower_id][2] + added_r)) #max(self.min_r,min(self.max_r,self.towers[tower_id][2] + added_r))
                 self.towers[tower_id] = (self.towers[tower_id][0],self.towers[tower_id][1], new_r, self.towers[tower_id][3], self.towers[tower_id][4])
 
 
@@ -138,7 +138,7 @@ class Chromosome:
             max_bw = util.calculate_max_BW(tower_population,self.user_satisfaction_levels[-1],self.towers[tower_id][2])
             min_bw = util.calculate_max_BW(tower_population,self.user_satisfaction_levels[1],self.towers[tower_id][2])
             #vchange this to be able to have different user satisfaction level.
-            bw = max_bw #random.uniform(min_bw,max_bw)
+            bw = max(random.uniform(min_bw + random.uniform(min_bw,max_bw/10),max_bw),max_bw)
             new_tower = (self.towers[tower_id][0],self.towers[tower_id][1],self.towers[tower_id][2], bw, self.towers[tower_id][4])
             self.towers[tower_id] = new_tower
 
