@@ -108,35 +108,25 @@ class Chromosome:
                 self.towers[i] = (new_x,new_y,self.towers[i][2], self.towers[i][3], self.towers[i][4])
 
 
-    def mut_r(self):
-        for tower_id in range(len(self.towers)):
-            add_r_prob = random.uniform(0,1)
-            if add_r_prob <= self.mut_prob:
-                added_r = random.uniform(-1,1) #random.gauss(self.min_r,std)
-                new_r = max(self.min_r,min(self.max_r,self.towers[tower_id][2] + added_r)) #max(self.min_r,min(self.max_r,self.towers[tower_id][2] + added_r))
-                self.towers[tower_id] = (self.towers[tower_id][0],self.towers[tower_id][1], new_r, self.towers[tower_id][3], self.towers[tower_id][4])
-
-
     def mut_pop(self):
         pop_prob = random.uniform(0,1)
         if pop_prob <= self.mut_prob and len(self.towers) > 1:
             pop_id = random.randint(0,len(self.towers)-1)
             self.towers.pop(pop_id)
 
+
     def mutation(self):
         self.mut_relocation_tower()
-        self.mut_r()
         self.mut_pop()
         self.mut_append()
         self.calculate_fitness()
-
     
 
     def adjust_power(self):
         for tower_id in range(len(self.towers)):
             tower_population = self.towers[tower_id][4]
             max_bw = util.calculate_max_BW(tower_population,self.user_satisfaction_levels[-1],self.towers[tower_id][2])
-            min_bw = util.calculate_max_BW(tower_population,self.user_satisfaction_levels[1],self.towers[tower_id][2])
+            min_bw = util.calculate_max_BW(tower_population,self.user_satisfaction_levels[0],self.towers[tower_id][2])
             #vchange this to be able to have different user satisfaction level.
             bw = max(random.uniform(min_bw + random.uniform(min_bw,10*min_bw),max_bw),max_bw)
             new_tower = (self.towers[tower_id][0],self.towers[tower_id][1],self.towers[tower_id][2], bw, self.towers[tower_id][4])
@@ -222,5 +212,5 @@ class Chromosome:
         self.coverage = coverage_penalty
         self.overdose = users_satisfaction_overdose_norm
         negative = -1 if ((1-(1e28)*users_satisfaction_overdose_norm) < 0 or 1 - (100)*coverage_penalty <0) else 1 
-        self.fitness = negative* (4 * (1 - towers_constrcution_cost_norm) * (1 - towers_maintanance_cost_norm) 
+        self.fitness = negative * (20 * (1 - towers_constrcution_cost_norm) * (1 - towers_maintanance_cost_norm) 
                         * (abs(1 - (100)*coverage_penalty)) * (1-zero_towers_norm) * (abs(1-(1e28)*users_satisfaction_overdose_norm)) * users_satisfaction_norm)
