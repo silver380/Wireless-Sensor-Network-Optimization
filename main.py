@@ -11,7 +11,7 @@ map_size = 0
 max_BW = 0
 n_iter = 200
 population_size = 50
-mut_prob = 0.5
+mut_prob = 0.1
 recomb_prob = 0.9
 pop_avg = 0
 pop_sum = 0
@@ -37,9 +37,9 @@ if __name__ == "__main__":
 
    print(map_size, max_BW, min_BW,pop_sum)
 
-   model = EA(n_iter, mut_prob, map_size, blocks_population, recomb_prob, tower_construction_cost,
+   ea = EA(n_iter, mut_prob, map_size, blocks_population, recomb_prob, tower_construction_cost,
                    tower_maintanance_cost, user_satisfaction_scores,user_satisfaction_levels, population_size, pop_avg, pop_sum)
-   model.run()
+   history = ea.run()
 
 
 

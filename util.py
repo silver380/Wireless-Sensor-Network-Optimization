@@ -64,7 +64,7 @@ def overlap_area(x1, y1, r1, x2, y2, r2):
     return r1**2 * a1 + r2**2 * a2 - d * r1 * math.sin(a1)
 
 def calculate_k(population_size, iter):
-    #return max(2, population_size * iter // n_iter )
-    return (population_size//10)
+    return max(2, population_size * iter // n_iter )
+    #return (population_size//10)
     #return 5
      

@@ -21,6 +21,8 @@ class EvolutionaryAlgorithm:
         self.current_iter = 0
         self.pop_avg = pop_avg
         self.pop_sum = pop_sum
+        self.fitness_avg = 0
+        self.fitness_history = []
     
     # Random initialization
     def init_population(self):
@@ -83,9 +85,7 @@ class EvolutionaryAlgorithm:
 
     # mu + lambda
     def survival_selection(self, youngs):
-        #TODO :k
-        k = 1
-        mpl = sorted(self.population.copy(), key=lambda agent: agent.fitness, reverse=True)[:self.population_size//k].copy() + youngs
+        mpl = self.population.copy() + youngs
         mpl = sorted(mpl, key=lambda agent: agent.fitness, reverse=True)
         mpl = mpl [:self.population_size].copy()
         return mpl
@@ -93,6 +93,11 @@ class EvolutionaryAlgorithm:
     # No improvement in last 20 generation
     def is_terminated(self):
         pass
+    
+    def calculate_fitness_avg(self):
+        
+        for pop in self.population:
+            self.fitness_avg += pop.fitness
 
     def run(self):
         self.init_population()
@@ -101,6 +106,7 @@ class EvolutionaryAlgorithm:
             youngs = self.recombination(parents).copy()
             youngs = self.all_mutation(youngs).copy()
             self.population = self.survival_selection(youngs).copy()
+            self.calculate_fitness_avg()
             self.current_iter += 1
             util.curr_iter += 1
             best_current = sorted(self.population, key=lambda agent: agent.fitness, reverse=True)[0]
@@ -108,8 +114,9 @@ class EvolutionaryAlgorithm:
                   f", best fitness: {best_current.fitness}")
             print(f'towers: {len(best_current.towers)}, construction cost: {best_current.constrcution_cost / 1e7}')
             print(f'user satisfaction = {best_current.curr_user_satisfaction_score} coverage :{best_current.coverage}')
-            print(f'overdose: {best_current.overdose}')
+            print(f'overdose: {best_current.overdose}, fitness_avg: {self.fitness_avg/(self.current_iter*50)}')
             print("------------------------------------------------------------------------------------------------------")
+            self.fitness_history.append(self.fitness_avg/(self.current_iter*50))
 
         ans =  sorted(self.population, key=lambda agent: agent.fitness, reverse=True)[0]
 
@@ -137,3 +144,5 @@ class EvolutionaryAlgorithm:
             for sat_level in ans.block_user_satisfaction_level:
                 print(*sat_level)
             sys.stdout = original_stdout
+
+        return self.fitness_history
