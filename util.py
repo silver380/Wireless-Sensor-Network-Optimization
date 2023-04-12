@@ -2,7 +2,7 @@ import json
 import numpy as np
 import math
 curr_iter = 0
-n_iter = 200
+n_iter = 400
 def read_config(file_path):
     data = {}
     with open(file_path) as f:

@@ -4,7 +4,7 @@ import math
 
 class Chromosome:
     def __init__(self, map_size, mut_prob, recomb_prob, blocks_population, user_satisfaction_scores, user_satisfaction_levels, 
-                tower_construction_cost, tower_maintanance_cost, pop_avg, pop_sum, calc_fitness):
+                tower_construction_cost, tower_maintanance_cost, pop_sum, calc_fitness):
         # List of towers: (x, y, r, BW, population_sum)
         self.towers = []
 
@@ -30,7 +30,6 @@ class Chromosome:
         self.block_user_satisfaction_score = [[0 for i in range(map_size)] for j in range(map_size)]
         self.block_user_satisfaction_level = [[0 for i in range(map_size)] for j in range(map_size)]
         self.fitness = 0
-        self.pop_avg = pop_avg
         self.pop_sum = pop_sum
         self.constrcution_cost = 0
         self.curr_user_satisfaction_score = 0
@@ -63,23 +62,8 @@ class Chromosome:
                 min_dist_id = tower_id
                 min_dist = dist
         return min_dist_id, min_dist
-    
-    def adj_tower2(self,i,j):
-        min_price = 1e33
-        min_price_id = -1
-        for tower_id, tower in enumerate(self.towers):
-            old_price = util.calculate_max_BW(tower[4],self.user_satisfaction_levels[-1], tower[2]) * self.tower_maintanance_cost
-            new_price = util.calculate_max_BW(tower[4] + self.blocks_population[i][j],self.user_satisfaction_levels[-1],max(tower[2],util.calculate_distance(tower,i+0.5, j + 0.5))) * self.tower_maintanance_cost
-            if new_price  - old_price < min_price :
-                min_price  = new_price  - old_price
-                min_price_id = tower_id
-        return min_price_id, util.calculate_distance(self.towers[min_price_id],i+0.5, j + 0.5)
-
-
-
-        
+            
     def update_adj(self):
-        #TODO better order
         for tower_id in range(len(self.towers)):
             self.towers[tower_id] = (self.towers[tower_id][0],self.towers[tower_id][1],self.min_r,self.towers[tower_id][3],0)
 
@@ -109,7 +93,7 @@ class Chromosome:
             if reloc_prob <= self.mut_prob:
                 std = util.calculate_std(self.max_r)
                 add_x = random.uniform(-1,1) 
-                add_y = random.uniform(-1,1) #
+                add_y = random.uniform(-1,1)
                 new_x = self.towers[i][0] + add_x
                 new_x = min(max(0,new_x),self.map_size)
                 new_y = self.towers[i][1] + add_y

@@ -6,7 +6,7 @@ import sys
 
 class EvolutionaryAlgorithm:
     def __init__(self, n_iter, mut_prob, map_size, blocks_population, recomb_prob, tower_construction_cost,
-                  tower_maintanance_cost, user_satisfaction_scores,user_satisfaction_levels, population_size, pop_avg, pop_sum):
+                  tower_maintanance_cost, user_satisfaction_scores,user_satisfaction_levels, population_size, pop_sum):
         self.n_iter = n_iter
         self.map_size = map_size
         self.mut_prob = mut_prob
@@ -19,7 +19,6 @@ class EvolutionaryAlgorithm:
         self.population = []
         self.population_size = population_size
         self.current_iter = 0
-        self.pop_avg = pop_avg
         self.pop_sum = pop_sum
         self.fitness_avg = 0
         self.fitness_history = []
@@ -28,7 +27,7 @@ class EvolutionaryAlgorithm:
     def init_population(self):
         for _ in range(self.population_size):
             young_pop = Chromosome(self.map_size, self.mut_prob, self.recomb_prob, self.blocks_population, self.user_satisfaction_scores, self.user_satisfaction_levels, 
-                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_avg, self.pop_sum, True)
+                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_sum, True)
             self.population.append(young_pop)
 
     def roulette_wheel_selection(self):
@@ -65,10 +64,10 @@ class EvolutionaryAlgorithm:
         for _ in range(self.population_size//2):
             parents = random.choices(mating_pool, k=2)
             young1 = Chromosome(self.map_size, self.mut_prob, self.recomb_prob, self.blocks_population, self.user_satisfaction_scores, self.user_satisfaction_levels, 
-                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_avg, self.pop_sum, False)
+                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_sum, False)
             
             young2 = Chromosome(self.map_size, self.mut_prob, self.recomb_prob, self.blocks_population, self.user_satisfaction_scores, self.user_satisfaction_levels, 
-                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_avg, self.pop_sum, False)
+                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_sum, False)
             # TODO: conditions for number of towers
             crossover_point = random.randint(1, max(min(len(parents[0].towers), len(parents[1].towers)) - 1,1))
             young1.towers = parents[0].towers[:crossover_point].copy() + parents[1].towers[crossover_point:].copy()
