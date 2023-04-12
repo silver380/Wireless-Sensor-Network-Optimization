@@ -1,12 +1,55 @@
 import util
 import numpy as np
 import random
-from  chromosome import Chromosome
+from chromosome import Chromosome
 import sys
 
+
 class EvolutionaryAlgorithm:
+    """
+    A class representing an Evolutionary Algorithm for optimizing the placement of communication towers.
+
+    :param n_iter: The number of iterations the algorithm will run.
+    :type n_iter: int
+    :param map_size: The size of the map on which the optimization is being performed.
+    :type map_size: int
+    :param mut_prob: The probability of a mutation occurring during the algorithm.
+    :type mut_prob: float
+    :param recomb_prob: The probability of a recombination occurring during the algorithm.
+    :type recomb_prob: float
+    :param blocks_population: A 2D list representing the population of each block on the map.
+    :type blocks_population: list
+    :param tower_construction_cost: The cost of constructing a new tower.
+    :type tower_construction_cost: float
+    :param tower_maintanance_cost: The cost of maintaining a tower.
+    :type tower_maintanance_cost: float
+    :param user_satisfaction_scores: A list of scores representing user satisfaction scores.
+    :type user_satisfaction_scores: list
+    :param user_satisfaction_levels: A list of levels representing user satisfaction levels.
+    :type user_satisfaction_levels: list
+    :param population_size: The size of the population of candidate solutions.
+    :type population_size: int
+    :param pop_sum: The total population of the map.
+    :type pop_sum: int
+
+    :ivar n_iter: The number of iterations the algorithm will run.
+    :ivar map_size: The size of the map on which the optimization is being performed.
+    :ivar mut_prob: The probability of a mutation occurring during the algorithm.
+    :ivar recomb_prob: The probability of a recombination occurring during the algorithm.
+    :ivar blocks_population: A 2D list representing the population of each block on the map.
+    :ivar tower_construction_cost: The cost of constructing a new tower.
+    :ivar tower_maintanance_cost: The cost of maintaining a tower.
+    :ivar user_satisfaction_scores: A list of scores representing user satisfaction scores.
+    :ivar user_satisfaction_levels: A list of levels representing user satisfaction levels.
+    :ivar population: A list representing the current population of candidate solutions.
+    :ivar population_size: The size of the population of candidate solutions.
+    :ivar current_iter: The current iteration of the algorithm.
+    :ivar pop_sum: The total population of the map.
+    :ivar fitness_avg: The average fitness score of the current population.
+    :ivar fitness_history: A list of fitness scores for each iteration of the algorithm.
+    """
     def __init__(self, n_iter, mut_prob, map_size, blocks_population, recomb_prob, tower_construction_cost,
-                  tower_maintanance_cost, user_satisfaction_scores,user_satisfaction_levels, population_size, pop_sum):
+                 tower_maintanance_cost, user_satisfaction_scores, user_satisfaction_levels, population_size, pop_sum):
         self.n_iter = n_iter
         self.map_size = map_size
         self.mut_prob = mut_prob
@@ -22,26 +65,46 @@ class EvolutionaryAlgorithm:
         self.pop_sum = pop_sum
         self.fitness_avg = 0
         self.fitness_history = []
-    
+
     # Random initialization
     def init_population(self):
+        """
+        Randomly initializes the population of the evolutionary algorithm.
+
+        :return: None
+        :raises: None
+        """
         for _ in range(self.population_size):
-            young_pop = Chromosome(self.map_size, self.mut_prob, self.recomb_prob, self.blocks_population, self.user_satisfaction_scores, self.user_satisfaction_levels, 
-                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_sum, True)
+            young_pop = Chromosome(self.map_size, self.mut_prob, self.recomb_prob, self.blocks_population,
+                                   self.user_satisfaction_scores, self.user_satisfaction_levels,
+                                   self.tower_construction_cost, self.tower_maintanance_cost, self.pop_sum, True)
             self.population.append(young_pop)
 
     def roulette_wheel_selection(self):
         # Computes the totallity of the population fitness
         population_fitness = sum([chromosome.fitness for chromosome in self.population])
-        
+
         # Computes for each chromosome the probability 
-        chromosome_probabilities = [chromosome.fitness/population_fitness for chromosome in self.population]
-        
+        chromosome_probabilities = [chromosome.fitness / population_fitness for chromosome in self.population]
+
         # Selects one chromosome based on the computed probabilities
         return np.random.choice(self.population, p=chromosome_probabilities)
-    
+
     # Fitness proportional-roulette wheel/ Tournament selection
     def tournament_selection(self, tour_pop, k):
+        """
+        A function that selects the best parent from a subset of the population using the tournament selection method.
+
+        :param tour_pop: A list of candidate chromosomes to compete for selection.
+        :type tour_pop: list
+        :param k: The number of chromosomes to select for the tournament.
+        :type k: int
+        :return: The best chromosome selected from the tournament.
+        :rtype: Chromosome
+
+        :raises:
+        Exception If the tournament population size is smaller than the tournament size. A message will be printed to the console to inform the user.
+        """
         try:
             parents = random.sample(tour_pop, k=k)
             parents = sorted(parents, key=lambda agent: agent.fitness, reverse=True)
@@ -49,56 +112,108 @@ class EvolutionaryAlgorithm:
             return bestparent
         except:
             print(f"k: {k}, pop: {len(tour_pop)}")
-    
+
     def parent_selection(self):
+        """
+            Selects parents for the next generation using tournament selection.
+
+            :return: A list of parent agents for recombination.
+            :rtype: list
+            """
         parents = []
         for _ in range(self.population_size):
-            best_parent = self.tournament_selection(self.population, util.calculate_k(len(self.population), self.current_iter))
+            best_parent = self.tournament_selection(self.population,
+                                                    util.calculate_k(len(self.population), self.current_iter))
             parents.append(best_parent)
             # if (len(candidate_parents) > 2):
             #     candidate_parents.remove(best_parent)
         return parents
-    
+
     def recombination(self, mating_pool):
+        """
+        Performs single-point crossover between pairs of parents selected from a given mating pool.
+
+        :param mating_pool: A list of candidate parents.
+        :type mating_pool: list
+
+        :return: A list of offspring chromosomes resulting from the recombination process.
+        :rtype: list
+
+        """
         youngs = []
-        for _ in range(self.population_size//2):
+        for _ in range(self.population_size // 2):
             parents = random.choices(mating_pool, k=2)
-            young1 = Chromosome(self.map_size, self.mut_prob, self.recomb_prob, self.blocks_population, self.user_satisfaction_scores, self.user_satisfaction_levels, 
-                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_sum, False)
-            
-            young2 = Chromosome(self.map_size, self.mut_prob, self.recomb_prob, self.blocks_population, self.user_satisfaction_scores, self.user_satisfaction_levels, 
-                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_sum, False)
+            young1 = Chromosome(self.map_size, self.mut_prob, self.recomb_prob, self.blocks_population,
+                                self.user_satisfaction_scores, self.user_satisfaction_levels,
+                                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_sum, False)
+
+            young2 = Chromosome(self.map_size, self.mut_prob, self.recomb_prob, self.blocks_population,
+                                self.user_satisfaction_scores, self.user_satisfaction_levels,
+                                self.tower_construction_cost, self.tower_maintanance_cost, self.pop_sum, False)
             # TODO: conditions for number of towers
-            crossover_point = random.randint(1, max(min(len(parents[0].towers), len(parents[1].towers)) - 1,1))
+            crossover_point = random.randint(1, max(min(len(parents[0].towers), len(parents[1].towers)) - 1, 1))
             young1.towers = parents[0].towers[:crossover_point].copy() + parents[1].towers[crossover_point:].copy()
             young2.towers = parents[1].towers[:crossover_point].copy() + parents[0].towers[crossover_point:].copy()
             youngs.append(young1)
             youngs.append(young2)
         return youngs
-    
+
     def all_mutation(self, youngs):
+        """
+        This function performs mutation on the given chromosomes.
+
+        :param youngs: A list of Chromosome objects on which mutation will be performed.
+        :type youngs: list
+        :return: A list of Chromosome objects after mutation.
+        :rtype: list
+
+        """
         for young in youngs:
             young.mutation()
 
         return youngs
 
-    # mu + lambda
+
     def survival_selection(self, youngs):
+        """
+        Returns the new population after combining the current population with the youngs using the mu + lambda method.
+
+        :param youngs: A list of new chromosomes generated from the current population by recombination and mutation.
+
+        :return: A list of chromosomes representing the new population after survival selection.
+        """
         mpl = self.population.copy() + youngs
         mpl = sorted(mpl, key=lambda agent: agent.fitness, reverse=True)
-        mpl = mpl [:self.population_size].copy()
+        mpl = mpl[:self.population_size].copy()
         return mpl
-    
+
     # No improvement in last 20 generation
     def is_terminated(self):
+        """
+        The method checks whether the algorithm should terminate based on the condition that there was no improvement in the fitness of the best chromosome in the last 20 generations.
+
+        :return: A boolean value indicating whether the algorithm should terminate or not. True if the algorithm should terminate, False otherwise.
+
+        """
         pass
-    
+
     def calculate_fitness_avg(self):
-        
+        """
+                Calculate the average fitness of the current population.
+
+                :return: None
+                """
+
         for pop in self.population:
             self.fitness_avg += pop.fitness
 
     def run(self):
+        """
+            Runs the genetic algorithm for a specified number of iterations.
+
+            :return: List of the average fitness of each generation.
+            :rtype: list
+            """
         self.init_population()
         for _ in range(self.n_iter):
             parents = self.parent_selection().copy()
@@ -113,11 +228,12 @@ class EvolutionaryAlgorithm:
                   f", best fitness: {best_current.fitness}")
             print(f'towers: {len(best_current.towers)}, construction cost: {best_current.constrcution_cost / 1e7}')
             print(f'user satisfaction = {best_current.curr_user_satisfaction_score} coverage :{best_current.coverage}')
-            print(f'overdose: {best_current.overdose}, fitness_avg: {self.fitness_avg/(self.current_iter*50)}')
-            print("------------------------------------------------------------------------------------------------------")
-            self.fitness_history.append(self.fitness_avg/(self.current_iter*50))
+            print(f'overdose: {best_current.overdose}, fitness_avg: {self.fitness_avg / (self.current_iter * 50)}')
+            print(
+                "------------------------------------------------------------------------------------------------------")
+            self.fitness_history.append(self.fitness_avg / (self.current_iter * 50))
 
-        ans =  sorted(self.population, key=lambda agent: agent.fitness, reverse=True)[0]
+        ans = sorted(self.population, key=lambda agent: agent.fitness, reverse=True)[0]
 
         original_stdout = sys.stdout
         with open('towers.txt', 'w') as f:
