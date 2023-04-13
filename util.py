@@ -84,29 +84,6 @@ def calculate_max_BW(max_pop, max_user_satisfaction_level, r):
     return max_BW
 
 
-def calculate_min_BW(max_BW, map_size, min_user_satisfaction_level, blocks_population):
-    """
-    Calculate the minimum bandwidth required to satisfy all users in the city map.
-
-    :param max_BW: The maximum bandwidth available for the city map.
-    :type max_BW: float
-    :param map_size: The size of the city map.
-    :type map_size: int
-    :param min_user_satisfaction_level: The minimum user satisfaction level.
-    :type min_user_satisfaction_level: float
-    :param blocks_population: The population in each block of the city map.
-    :type blocks_population: list[list[int]]
-    :return: The minimum bandwidth required to satisfy all users in the city map.
-    :rtype: float
-    """
-    min_BW = 0
-    for i in range(map_size):
-        for j in range(map_size):
-            min_BW += blocks_population[i][j] * min_user_satisfaction_level / coverage((i + 0.5, j + 0.5, 0, 0, 0),
-                                                                                       i + 0.5, j + 0.5)
-    return min_BW / (map_size ** 2)
-
-
 def calculate_distance(tower, i, j):
     """
         Calculate the Euclidean distance between the given tower and the block with coordinates (i, j).

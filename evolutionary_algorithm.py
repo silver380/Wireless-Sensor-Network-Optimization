@@ -101,17 +101,11 @@ class EvolutionaryAlgorithm:
         :type k: int
         :return: The best chromosome selected from the tournament.
         :rtype: Chromosome
-
-        :raises:
-        Exception If the tournament population size is smaller than the tournament size. A message will be printed to the console to inform the user.
         """
-        try:
-            parents = random.sample(tour_pop, k=k)
-            parents = sorted(parents, key=lambda agent: agent.fitness, reverse=True)
-            bestparent = parents[0]
-            return bestparent
-        except:
-            print(f"k: {k}, pop: {len(tour_pop)}")
+        parents = random.sample(tour_pop, k=k)
+        parents = sorted(parents, key=lambda agent: agent.fitness, reverse=True)
+        bestparent = parents[0]
+        return bestparent
 
     def parent_selection(self):
         """

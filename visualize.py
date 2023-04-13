@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import pandas as pd
 from numpy import loadtxt
 
 def user_satisfaction_score(min_stais, max_stais):
@@ -65,9 +66,25 @@ def get_towers():
     r = [tower[2] for tower in towers]
     return x_locs, y_locs, r
 
+def avg_fitness():
+    df = pd.read_csv('histories.csv', header=None)
+    df.loc['mean'] = df.mean()
+    df.loc['min'] = df.min()
+    df.loc['max'] = df.max()
+    fig, ax = plt.subplots()
+    ax.plot(df.columns,df.loc['mean'])
+    ax.fill_between(df.columns, df.loc['min'], df.loc['max'], alpha=0.2)
+    ax.set_xlabel('Generations')
+    ax.set_ylabel('Average Fitness')
+    plt.xticks(range(0, len(df.columns)))
+    plt.show()
+    #print(df)
+
+
 if __name__ == '__main__':
     x_locs, y_locs, r = get_towers()
     user_satisfaction_score(0, 40)
     user_satisfaction_level(x_locs, y_locs, r)
     tower_allocation(x_locs, y_locs, r)
     towers_location(x_locs, y_locs, r)
+    avg_fitness()
