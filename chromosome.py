@@ -151,7 +151,6 @@ class Chromosome:
         :return: A tuple containing the ID and the distance of the nearest tower to the given block.
         :rtype: tuple[int, float]
         """
-        #TODO: tie breaker
         min_dist = 1000000
         min_dist_id = -1
         for tower_id, tower in enumerate(self.towers):
