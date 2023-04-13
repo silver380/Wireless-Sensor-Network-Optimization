@@ -3,7 +3,7 @@ import numpy as np
 import math
 
 curr_iter = 0
-n_iter = 400
+n_iter = 200
 
 
 def read_config(file_path):

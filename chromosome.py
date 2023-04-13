@@ -150,6 +150,7 @@ class Chromosome:
         :return: A tuple containing the ID and the distance of the nearest tower to the given block.
         :rtype: tuple[int, float]
         """
+        #TODO: tie breaker
         min_dist = 1000000
         min_dist_id = -1
         for tower_id, tower in enumerate(self.towers):
@@ -157,6 +158,10 @@ class Chromosome:
             if (dist < min_dist - self.epsilon):
                 min_dist_id = tower_id
                 min_dist = dist
+            elif (dist >= min_dist - self.epsilon and dist <= min_dist + self.epsilon ):
+                if self.towers[tower_id][4] < self.towers[min_dist_id][4]:
+                   min_dist_id = tower_id
+                   min_dist = dist 
         return min_dist_id, min_dist
 
     def update_adj(self):

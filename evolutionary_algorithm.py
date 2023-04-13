@@ -227,7 +227,7 @@ class EvolutionaryAlgorithm:
             print(f"current iteration: {self.current_iter} / {self.n_iter}",
                   f", best fitness: {best_current.fitness}")
             print(f'towers: {len(best_current.towers)}, construction cost: {best_current.constrcution_cost / 1e7}')
-            print(f'user satisfaction = {best_current.curr_user_satisfaction_score} coverage :{best_current.coverage}')
+            print(f'user satisfaction = {best_current.curr_user_satisfaction_score} overlap :{best_current.coverage}')
             print(f'overdose: {best_current.overdose}, fitness_avg: {self.fitness_avg / (self.current_iter * 50)}')
             print(
                 "------------------------------------------------------------------------------------------------------")
