@@ -141,6 +141,7 @@ class Chromosome:
     def adj_tower(self, i, j):
         """
         A function to get the ID and distance of the nearest tower to a block by given coordinates.
+        If there are multiple selections, the tower with the least population is returned.
 
         :param i: An integer representing the x coordinate of the block.
         :type i: int
