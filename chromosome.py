@@ -441,3 +441,4 @@ class Chromosome:
         self.fitness = negative * (20 * (1 - towers_constrcution_cost_norm) * (1 - towers_maintanance_cost_norm)
                                    * (abs(1 - (100) * coverage_penalty)) * (1 - zero_towers_norm) * (
                                        abs(1 - (1e28) * users_satisfaction_overdose_norm)) * users_satisfaction_norm)
+        
