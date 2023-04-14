@@ -13,7 +13,7 @@ max_BW = 0
 n_iter = util.n_iter
 population_size = 50
 mut_prob = 0.1
-recomb_prob = 0.1
+recomb_prob = 0.9
 pop_avg = 0
 pop_sum = 0
 histories = []
@@ -31,7 +31,7 @@ if __name__ == "__main__":
    
    
    max_BW = util.calculate_max_BW(map_size, pop_sum,user_satisfaction_levels[-1])
-   for i in range(1):
+   for i in range(10):
       print(f"program number={i+1} / 10, map size= {map_size}, max_BW= {max_BW}, population sum = {pop_sum}, recomb_prob= {recomb_prob}, mut_prob= {mut_prob}")
       ea = EA(n_iter, mut_prob, map_size, blocks_population, recomb_prob, tower_construction_cost,
                      tower_maintanance_cost, user_satisfaction_scores,user_satisfaction_levels, population_size, pop_sum, best_ans)

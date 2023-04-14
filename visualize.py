@@ -76,7 +76,7 @@ def avg_fitness():
     ax.fill_between(df.columns, df.loc['min'], df.loc['max'], alpha=0.2)
     ax.set_xlabel('Generations')
     ax.set_ylabel('Average Fitness')
-    plt.xticks(range(0, len(df.columns),25))
+    plt.xticks(np.arange(min(df.columns), 1025, 25.0))
     plt.show()
     #print(df)
 
