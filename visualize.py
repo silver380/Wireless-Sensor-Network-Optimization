@@ -43,8 +43,8 @@ def tower_allocation(x_locs, y_locs, r):
     for i in range(len(x_locs)):
         circle = plt.Circle((y_locs[i], x_locs[i]), radius=r[i], fill=False)
         plt.gca().add_patch(circle)
-    plt.xlim(min(y_locs)-5, max(y_locs)+5)
-    plt.ylim(min(x_locs)-5, max(x_locs)+5)
+    plt.ylim(max(y_locs)+5, min(y_locs)-5)
+    plt.xlim(min(x_locs)-5, max(x_locs)+5)
     plt.show()
 
     # plt.show()
@@ -55,7 +55,7 @@ def towers_location(x_locs, y_locs, r):
         circle = plt.Circle((x_locs[i], y_locs[i]), radius=r[i], fill=False)
         plt.gca().add_patch(circle)
     plt.xlim(min(x_locs), max(x_locs))
-    plt.ylim(min(y_locs), max(y_locs))
+    plt.ylim(max(y_locs), min(y_locs))
     plt.show()
 
 def get_towers():
