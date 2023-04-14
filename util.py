@@ -167,5 +167,5 @@ def calculate_k(population_size, iter):
     """
 
     return max(2, population_size * iter // n_iter)
-    # return (population_size//10)
+    #return (population_size//5)
     # return 5

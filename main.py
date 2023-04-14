@@ -17,7 +17,10 @@ recomb_prob = 0.1
 pop_avg = 0
 pop_sum = 0
 histories = []
-
+best_ans = 0
+best_ans_price = 0
+best_ans_satisfaction = 0
+best_towers = 0
 if __name__ == "__main__":
    problem_config = util.read_config(problem_config_file)
    tower_construction_cost = problem_config['tower_construction_cost']
@@ -31,11 +34,17 @@ if __name__ == "__main__":
    for i in range(10):
       print(f"program number={i+1} / 10, map size= {map_size}, max_BW= {max_BW}, population sum = {pop_sum}, recomb_prob= {recomb_prob}, mut_prob= {mut_prob}")
       ea = EA(n_iter, mut_prob, map_size, blocks_population, recomb_prob, tower_construction_cost,
-                     tower_maintanance_cost, user_satisfaction_scores,user_satisfaction_levels, population_size, pop_sum)
+                     tower_maintanance_cost, user_satisfaction_scores,user_satisfaction_levels, population_size, pop_sum, best_ans)
       
-      history_i = ea.run()
+      ans, ans_price, ans_towers, ans_satisfaction, history_i = ea.run()
       histories.append(history_i)
+      if ans > best_ans:
+         best_ans = ans
+         best_ans_price = ans_price
+         best_towers = ans_towers
+         best_ans_satisfaction = ans_satisfaction
 
-histories = np.array(histories)     
+print(f"best found answer has {best_ans} fitness, {best_towers} towers, {best_ans_price} price and {best_ans_satisfaction} user satisfaction")
+histories = np.array(histories)   
 np.savetxt("histories.csv", histories,
               delimiter = ",")

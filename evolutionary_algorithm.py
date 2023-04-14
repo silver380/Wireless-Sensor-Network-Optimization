@@ -31,6 +31,7 @@ class EvolutionaryAlgorithm:
     :type population_size: int
     :param pop_sum: The total population of the map.
     :type pop_sum: int
+    ;type prev_best_ans: float
 
     :ivar n_iter: The number of iterations the algorithm will run.
     :ivar map_size: The size of the map on which the optimization is being performed.
@@ -49,7 +50,7 @@ class EvolutionaryAlgorithm:
     :ivar fitness_history: A list of fitness scores for each iteration of the algorithm.
     """
     def __init__(self, n_iter, mut_prob, map_size, blocks_population, recomb_prob, tower_construction_cost,
-                 tower_maintanance_cost, user_satisfaction_scores, user_satisfaction_levels, population_size, pop_sum):
+                 tower_maintanance_cost, user_satisfaction_scores, user_satisfaction_levels, population_size, pop_sum, prev_best_ans):
         self.n_iter = n_iter
         self.map_size = map_size
         self.mut_prob = mut_prob
@@ -65,6 +66,7 @@ class EvolutionaryAlgorithm:
         self.pop_sum = pop_sum
         self.fitness_avg = 0
         self.fitness_history = []
+        self.prev_best_ans = prev_best_ans
 
     # Random initialization
     def init_population(self):
@@ -221,7 +223,7 @@ class EvolutionaryAlgorithm:
             print(f"current iteration: {self.current_iter} / {self.n_iter}",
                   f", best fitness: {best_current.fitness}")
             print(f'towers: {len(best_current.towers)}, construction cost: {best_current.constrcution_cost / 1e7}')
-            print(f'user satisfaction = {best_current.curr_user_satisfaction_score} overlap :{best_current.coverage}')
+            print(f'user satisfaction norm = {best_current.curr_user_satisfaction_score}, user satisfaction score: {best_current.sum_satisfaction} / {best_current.pop_sum * best_current.user_satisfaction_scores[-1]} overlap :{best_current.coverage}')
             print(f'overdose: {best_current.overdose}, fitness_avg: {self.fitness_avg / (self.current_iter * 50)}')
             print(
                 "------------------------------------------------------------------------------------------------------")
@@ -229,29 +231,30 @@ class EvolutionaryAlgorithm:
 
         ans = sorted(self.population, key=lambda agent: agent.fitness, reverse=True)[0]
 
-        original_stdout = sys.stdout
-        with open('towers.txt', 'w') as f:
-            sys.stdout = f
-            for tower in ans.towers:
-                print(*tower)
-            sys.stdout = original_stdout
+        if(ans.fitness > self.prev_best_ans):
+            original_stdout = sys.stdout
+            with open('towers.txt', 'w') as f:
+                sys.stdout = f
+                for tower in ans.towers:
+                    print(*tower)
+                sys.stdout = original_stdout
 
-        with open('adj.txt', 'w') as f:
-            sys.stdout = f
-            for adj in ans.adj_id:
-                print(*adj)
-            sys.stdout = original_stdout
+            with open('adj.txt', 'w') as f:
+                sys.stdout = f
+                for adj in ans.adj_id:
+                    print(*adj)
+                sys.stdout = original_stdout
 
-        with open('user_satisfaction_score.txt', 'w') as f:
-            sys.stdout = f
-            for sat_score in ans.block_user_satisfaction_score:
-                print(*sat_score)
-            sys.stdout = original_stdout
+            with open('user_satisfaction_score.txt', 'w') as f:
+                sys.stdout = f
+                for sat_score in ans.block_user_satisfaction_score:
+                    print(*sat_score)
+                sys.stdout = original_stdout
 
-        with open('user_satisfaction_level.txt', 'w') as f:
-            sys.stdout = f
-            for sat_level in ans.block_user_satisfaction_level:
-                print(*sat_level)
-            sys.stdout = original_stdout
+            with open('user_satisfaction_level.txt', 'w') as f:
+                sys.stdout = f
+                for sat_level in ans.block_user_satisfaction_level:
+                    print(*sat_level)
+                sys.stdout = original_stdout
 
-        return self.fitness_history
+        return ans.fitness, ans.constrcution_cost, len(ans.towers), ans.sum_satisfaction, self.fitness_history

@@ -71,6 +71,7 @@ class Chromosome:
     :type epsilon: float
     :ivar calc_fitness: A function that calculates the fitness of a chromosome.
     :type calc_fitness: Callable[[Chromosome], float]
+    :type sum_satisfaction: float
     """
 
     def __init__(self, map_size, mut_prob, recomb_prob, blocks_population, user_satisfaction_scores,
@@ -107,6 +108,7 @@ class Chromosome:
         self.user_satisfaction_penalty = 0
         self.epsilon = 1e-10
         self.calc_fitness = calc_fitness
+        self.sum_satisfaction = 0
         self.init_chromosome()
 
     def init_chromosome(self):
@@ -178,9 +180,10 @@ class Chromosome:
         :returns: None.
         :rtype: None
         """
+        #self.towers = sorted(self.towers, key=lambda x:x[0])
         # Set minimum range for all towers and set the population to zero
         for tower_id in range(len(self.towers)):
-            self.towers[tower_id] = (self.towers[tower_id][0], self.towers[tower_id][1], self.min_r, self.towers[tower_id][3], 0)
+            self.towers[tower_id] = (self.towers[tower_id][0], self.towers[tower_id][1], 0, self.towers[tower_id][3], 0)
 
         # Associate each neighborhood with its closest tower
         for i in range(self.map_size):
@@ -229,8 +232,8 @@ class Chromosome:
             reloc_prob = random.uniform(0, 1)
             if reloc_prob <= self.mut_prob:
                 std = util.calculate_std(self.max_r)
-                add_x = random.uniform(-1, 1)
-                add_y = random.uniform(-1, 1)
+                add_x = random.uniform(-2, 2)
+                add_y = random.uniform(-2, 2)
                 new_x = self.towers[i][0] + add_x
                 new_x = min(max(0, new_x), self.map_size)
                 new_y = self.towers[i][1] + add_y
@@ -287,8 +290,11 @@ class Chromosome:
             tower_population = self.towers[tower_id][4]
             max_bw = util.calculate_max_BW(tower_population, self.user_satisfaction_levels[-1],
                                            self.towers[tower_id][2])
+            mid_bw = util.calculate_max_BW(tower_population, self.user_satisfaction_levels[len(self.user_satisfaction_levels)//2],
+                                            self.towers[tower_id][2])
             min_bw = util.calculate_max_BW(tower_population, self.user_satisfaction_levels[0], self.towers[tower_id][2])
-            bw = max(random.uniform(min_bw + random.uniform(0, 10 * min_bw), max_bw), max_bw)
+            bw = min(max_bw,random.triangular(min_bw + random.uniform(min_bw,10*mid_bw), 1.8*max_bw, 2*max_bw)) if min_bw!= max_bw else max_bw
+
             new_tower = (
                 self.towers[tower_id][0], self.towers[tower_id][1], self.towers[tower_id][2], bw,
                 self.towers[tower_id][4])
@@ -429,6 +435,7 @@ class Chromosome:
         self.curr_user_satisfaction_score = users_satisfaction_norm
         self.coverage = coverage_penalty
         self.overdose = users_satisfaction_overdose_norm
+        self.sum_satisfaction = users_satisfaction
         negative = -1 if (
                 (1 - (1e28) * users_satisfaction_overdose_norm) < 0 or 1 - (100) * coverage_penalty < 0) else 1
         self.fitness = negative * (20 * (1 - towers_constrcution_cost_norm) * (1 - towers_maintanance_cost_norm)
