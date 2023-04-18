@@ -32,6 +32,7 @@ class EvolutionaryAlgorithm:
     :param pop_sum: The total population of the map.
     :type pop_sum: int
     ;type prev_best_ans: float
+    ;typr not_improved: float
 
     :ivar n_iter: The number of iterations the algorithm will run.
     :ivar map_size: The size of the map on which the optimization is being performed.
@@ -48,6 +49,8 @@ class EvolutionaryAlgorithm:
     :ivar pop_sum: The total population of the map.
     :ivar fitness_avg: The average fitness score of the current population.
     :ivar fitness_history: A list of fitness scores for each iteration of the algorithm.
+    :ivar prev_best_ans: best found answer
+    :ivar not_improved: number of iterations with no improvement in average fitness
     """
     def __init__(self, n_iter, mut_prob, map_size, blocks_population, recomb_prob, tower_construction_cost,
                  tower_maintanance_cost, user_satisfaction_scores, user_satisfaction_levels, population_size, pop_sum, prev_best_ans):
@@ -67,6 +70,7 @@ class EvolutionaryAlgorithm:
         self.fitness_avg = 0
         self.fitness_history = []
         self.prev_best_ans = prev_best_ans
+        self.not_improved = 0
 
     # Random initialization
     def init_population(self):
@@ -82,17 +86,7 @@ class EvolutionaryAlgorithm:
                                    self.tower_construction_cost, self.tower_maintanance_cost, self.pop_sum, True)
             self.population.append(young_pop)
 
-    def roulette_wheel_selection(self):
-        # Computes the totallity of the population fitness
-        population_fitness = sum([chromosome.fitness for chromosome in self.population])
-
-        # Computes for each chromosome the probability 
-        chromosome_probabilities = [chromosome.fitness / population_fitness for chromosome in self.population]
-
-        # Selects one chromosome based on the computed probabilities
-        return np.random.choice(self.population, p=chromosome_probabilities)
-
-    # Fitness proportional-roulette wheel/ Tournament selection
+    # Fitness Tournament selection
     def tournament_selection(self, tour_pop, k):
         """
         A function that selects the best parent from a subset of the population using the tournament selection method.
@@ -121,8 +115,7 @@ class EvolutionaryAlgorithm:
             best_parent = self.tournament_selection(self.population,
                                                     util.calculate_k(len(self.population), self.current_iter))
             parents.append(best_parent)
-            # if (len(candidate_parents) > 2):
-            #     candidate_parents.remove(best_parent)
+
         return parents
 
     def recombination(self, mating_pool):
@@ -147,9 +140,15 @@ class EvolutionaryAlgorithm:
                                 self.user_satisfaction_scores, self.user_satisfaction_levels,
                                 self.tower_construction_cost, self.tower_maintanance_cost, self.pop_sum, False)
             # TODO: conditions for number of towers
-            crossover_point = random.randint(1, max(min(len(parents[0].towers), len(parents[1].towers)) - 1, 1))
-            young1.towers = parents[0].towers[:crossover_point].copy() + parents[1].towers[crossover_point:].copy()
-            young2.towers = parents[1].towers[:crossover_point].copy() + parents[0].towers[crossover_point:].copy()
+            prob = random.uniform(0, 1)
+            if prob <= self.recomb_prob:
+                crossover_point = random.randint(1, max(min(len(parents[0].towers), len(parents[1].towers)) - 1, 1))
+                young1.towers = parents[0].towers[:crossover_point].copy() + parents[1].towers[crossover_point:].copy()
+                young2.towers = parents[1].towers[:crossover_point].copy() + parents[0].towers[crossover_point:].copy()
+            else:
+                young1.towers = parents[0].towers.copy()
+                young2.towers = parents[1].towers.copy()
+
             youngs.append(young1)
             youngs.append(young2)
         return youngs
@@ -184,14 +183,20 @@ class EvolutionaryAlgorithm:
         return mpl
 
     # No improvement in last 20 generation
-    def is_terminated(self):
+    def is_terminated(self, prev):
         """
         The method checks whether the algorithm should terminate based on the condition that there was no improvement in the fitness of the best chromosome in the last 20 generations.
-
+        
         :return: A boolean value indicating whether the algorithm should terminate or not. True if the algorithm should terminate, False otherwise.
 
         """
-        pass
+        avg = self.fitness_avg / ((self.current_iter+1) * self.population_size)
+        if avg > prev + 1e-10:
+            self.not_improved = 0
+        elif (avg > prev - 1e-10) and (avg < prev + 1e-10):
+            self.not_improved +=1
+        
+        return self.not_improved < 20
 
     def calculate_fitness_avg(self):
         """
@@ -211,6 +216,8 @@ class EvolutionaryAlgorithm:
             :rtype: list
             """
         self.init_population()
+        prev_avg = 0
+
         for _ in range(self.n_iter):
             parents = self.parent_selection().copy()
             youngs = self.recombination(parents).copy()
@@ -224,13 +231,16 @@ class EvolutionaryAlgorithm:
                   f", best fitness: {best_current.fitness}")
             print(f'towers: {len(best_current.towers)}, construction cost: {best_current.constrcution_cost / 1e7}')
             print(f'user satisfaction norm = {best_current.curr_user_satisfaction_score}, user satisfaction score: {best_current.sum_satisfaction} / {best_current.pop_sum * best_current.user_satisfaction_scores[-1]} overlap :{best_current.coverage}')
-            print(f'overdose: {best_current.overdose}, fitness_avg: {self.fitness_avg / (self.current_iter * 50)}')
+            print(f'overdose: {best_current.overdose}, fitness_avg: {self.fitness_avg / (self.current_iter * self.population_size)}')
             print(
                 "------------------------------------------------------------------------------------------------------")
-            self.fitness_history.append(self.fitness_avg / (self.current_iter * 50))
+            self.fitness_history.append(self.fitness_avg / (self.current_iter * self.population_size))
+            prev_avg = self.fitness_avg / (self.current_iter * self.population_size)
 
         ans = sorted(self.population, key=lambda agent: agent.fitness, reverse=True)[0]
 
+        # save the best yet found answer
+        
         if(ans.fitness > self.prev_best_ans):
             original_stdout = sys.stdout
             with open('towers.txt', 'w') as f:

@@ -99,19 +99,6 @@ def calculate_distance(tower, i, j):
         """
     return ((tower[0] - i) ** 2 + (tower[1] - j) ** 2) ** 0.5
 
-# ??
-def calculate_std(max_r):
-    """
-    Calculates the standard deviation to be used in the update of the step size in the algorithm.
-
-    :param max_r: The maximum range that the towers can cover.
-    :type max_r: float
-    :return: The calculated standard deviation.
-    :rtype: float
-    """
-    std = max((2 ** 0.5) / 2, max_r * 1 / (curr_iter + 1))
-    return std
-
 
 def overlap_area(x1, y1, r1, x2, y2, r2):
     """
@@ -167,5 +154,7 @@ def calculate_k(population_size, iter):
     """
 
     return max(2, population_size * iter // n_iter)
+
     #return (population_size//5)
-    # return 5
+    
+    #return 5
