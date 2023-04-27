@@ -35,18 +35,17 @@ if __name__ == "__main__":
    
    max_BW = util.calculate_max_BW(map_size, pop_sum,user_satisfaction_levels[-1])
    start_time = time.time()
-   for i in range(10):
-      print(f"prog= {i+1} /10, map size= {map_size}, max needed BW= {max_BW}, population sum = {pop_sum}, recomb_prob= {recomb_prob}, mut_prob= {mut_prob}")
-      ea = EA(n_iter, mut_prob, map_size, blocks_population, recomb_prob, tower_construction_cost,
-                     tower_maintanance_cost, user_satisfaction_scores,user_satisfaction_levels, population_size, pop_sum, best_ans)
-      
-      ans, ans_price, ans_towers, ans_satisfaction, history_i = ea.run()
-      histories.append(history_i)
-      if ans > best_ans:
-         best_ans = ans
-         best_ans_price = ans_price
-         best_towers = ans_towers
-         best_ans_satisfaction = ans_satisfaction
+   print(f"map size= {map_size}, max needed BW= {max_BW}, population sum = {pop_sum}, recomb_prob= {recomb_prob}, mut_prob= {mut_prob}")
+   ea = EA(n_iter, mut_prob, map_size, blocks_population, recomb_prob, tower_construction_cost,
+                  tower_maintanance_cost, user_satisfaction_scores,user_satisfaction_levels, population_size, pop_sum, best_ans)
+   
+   ans, ans_price, ans_towers, ans_satisfaction, history_i = ea.run()
+   histories.append(history_i)
+   if ans > best_ans:
+      best_ans = ans
+      best_ans_price = ans_price
+      best_towers = ans_towers
+      best_ans_satisfaction = ans_satisfaction
 
    end_time = time.time()
    runtime = end_time - start_time
