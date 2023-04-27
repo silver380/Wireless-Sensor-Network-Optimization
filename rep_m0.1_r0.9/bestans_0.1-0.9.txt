@@ -1,2 +1,0 @@
-best found answer has 18.28607239229343 fitness, 28 towers, 844029.785095149 price and 7673560 user satisfaction
-max_avg_fitness: 17.682551139615594

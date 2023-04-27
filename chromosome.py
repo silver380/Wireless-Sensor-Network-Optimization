@@ -430,7 +430,6 @@ class Chromosome:
         zero_towers_norm = zero_towers / (len(self.towers))
         # Maximization
         self.constrcution_cost = towers_maintanance_cost + towers_constrcution_cost
-        self.constrcution_cost_norm = (towers_maintanance_cost_norm + towers_maintanance_cost_norm) / 2
         self.curr_user_satisfaction_score = users_satisfaction_norm
         self.coverage = coverage_penalty
         self.overdose = users_satisfaction_overdose_norm

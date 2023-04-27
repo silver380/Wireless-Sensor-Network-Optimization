@@ -204,7 +204,7 @@ class EvolutionaryAlgorithm:
 
                 :return: None
                 """
-
+        self.fitness_avg = 0
         for pop in self.population:
             self.fitness_avg += pop.fitness
 
@@ -231,11 +231,11 @@ class EvolutionaryAlgorithm:
                   f", best fitness: {best_current.fitness}")
             print(f'towers: {len(best_current.towers)}, construction cost: {best_current.constrcution_cost / 1e7}')
             print(f'user satisfaction norm = {best_current.curr_user_satisfaction_score}, user satisfaction score: {best_current.sum_satisfaction} / {best_current.pop_sum * best_current.user_satisfaction_scores[-1]} overlap :{best_current.coverage}')
-            print(f'overdose: {best_current.overdose}, fitness_avg: {self.fitness_avg / (self.current_iter * self.population_size)}')
+            print(f'overdose: {best_current.overdose}, fitness_avg: {self.fitness_avg / (self.population_size)}')
             print(
                 "------------------------------------------------------------------------------------------------------")
-            self.fitness_history.append(self.fitness_avg / (self.current_iter * self.population_size))
-            prev_avg = self.fitness_avg / (self.current_iter * self.population_size)
+            self.fitness_history.append(self.fitness_avg / (self.population_size))
+            prev_avg = self.fitness_avg / (self.population_size)
 
         ans = sorted(self.population, key=lambda agent: agent.fitness, reverse=True)[0]
 
