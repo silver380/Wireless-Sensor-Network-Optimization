@@ -2,7 +2,7 @@
 The problem is to optimize a communication network for a city with multiple towers and user satisfaction levels using an evolutionary algorithm. The goal is to adjust the power of each tower and their locations in order to minimize the total cost while ensuring that all users have a satisfactory level of service. The problem takes into account the population size of each block in the city and the distance between each block and the towers.
 The algorithm tries to find the optimal solution by adjusting the power of each tower and their locations through a genetic algorithm approach. The project provides visualizations to help understand the performance and effectiveness of the algorithm.
 
-![towers allocation](Report_MutProb_0.1_RecombProb_0.9/tower_location_MutProb_0.1_RecombProb_0.9.png "image title")
+![towers allocation](Report_MutProb_0.1_RecombProb_0.9/User_Satisfaction_level_MutProb_0.1_RecombProb_0.9.png "image title")
 
 ## Usage
 To run the program and get the answer, execute the `main.py` file. The program reads the `problem_config.txt` file to get the required parameters for the problem, such as user satisfaction levels and tower costs. The `blocks_population.txt` file shows the city map and the population size in each block.
