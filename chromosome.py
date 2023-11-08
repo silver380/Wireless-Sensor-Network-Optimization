@@ -4,7 +4,7 @@ import math
 
 
 class Chromosome:
-    """A class representing a Chromosome in a genetic algorithm for optimizing the placement of cellular towers for maximum user satisfaction.
+    """ This class represents a Chromosome in the evolutionary algorithm for optimizing the placement of cellular towers for maximum user satisfaction.
 
     :param map_size: The size of the map.
     :type map_size: int
