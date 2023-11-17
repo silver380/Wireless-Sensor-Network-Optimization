@@ -1,6 +1,6 @@
 # Wireless Sensor Network Optimization Using Evolutionary Algorithms
 The problem is to optimize a communication network for a city with multiple towers and user satisfaction levels using an evolutionary algorithm. The goal is to adjust the power of each tower and their locations in order to minimize the total cost while ensuring that all users have a satisfactory level of service. The problem takes into account the population size of each block in the city and the distance between each block and the towers.
-The algorithm tries to find the optimal solution by adjusting the power of each tower and their locations through a genetic algorithm approach. The project provides visualizations to help understand the performance and effectiveness of the algorithm.
+The algorithm tries to find the optimal solution by adjusting the power of each tower and their locations through an evolutionary algorithm approach. The project provides visualizations to help understand the performance and effectiveness of the algorithm.
 
 ![towers allocation](Report_MutProb_0.1_RecombProb_0.9/User_Satisfaction_level_MutProb_0.1_RecombProb_0.9.png "image title")
 
